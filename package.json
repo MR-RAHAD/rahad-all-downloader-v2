@@ -1,0 +1,43 @@
+{
+  "name": "rahad-all-downloader-v2",
+  "version": "2.0.2",
+  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads & Pinterest",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "test": "node test.js",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "video-downloader",
+    "tiktok-downloader",
+    "facebook-downloader",
+    "instagram-downloader",
+    "youtube-downloader",
+    "rahad-all-downloader",
+    "media-downloader",
+    "rahad"
+  ],
+  "author": "Mohammad Rahad <mohammadrahad1@yahoo.com> (https://www.facebook.com/md.rahad.hosain18)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2/issues"
+  },
+  "homepage": "https://www.npmjs.com/package/rahad-all-downloader-v2",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "axios": "^1.6.0",
+    "qs": "^6.11.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
