@@ -46,10 +46,12 @@ This package supports high-speed media extraction from the following platforms:
 
 - ✅ **TikTok** – Download HD videos without watermark & MP3
 - ✅ **Facebook** – Fetch both HD and SD video links
-- ✅ **Instagram** – Reels, Posts, IGTV (Auto Cookie Support)
+- ✅ **Instagram** – Reels, Posts, IGTV (No Cookie Needed)
 - ✅ **Threads** – High quality video & image extraction
-- ✅ **YouTube** – Video & audio powered by `@distube/ytdl-core`
-- ✅ **Pinterest & Likee & capcut** – Direct MP4 media extraction
+- ✅ **YouTube** – Video via Invidious API (auto instance fallback)
+- ✅ **Pinterest, Likee & CapCut** – Direct MP4 media extraction
+- ✅ **X (Twitter)** – Multi-quality video & photo extraction
+- ✅ **Kwai** – Direct video extraction
 
 ---
 
@@ -58,12 +60,11 @@ This package supports high-speed media extraction from the following platforms:
 ```js
 const { alldl } = require('rahad-all-downloader-v2');
 
-const videoUrl = 'https://www.facebook.com/...'; //support url tiktok, Instagram,  Facebook, likee, threats, capcut, YouTube, pinterest
-const manualCookie = ''; // if Instagram video downloader error then add your Instagram account cookie
+const videoUrl = 'https://www.facebook.com/...'; //support url tiktok, Instagram,  Facebook, likee, threads, capcut, YouTube, pinterest, x, kwai
 
 async function downloadMedia() {
   try {
-    const result = await alldl(videoUrl, manualCookie);
+    const result = await alldl(videoUrl);
     console.log(result);
   } catch (error) {
     console.error(error.message);
@@ -117,13 +118,29 @@ const { alldl } = require('rahad-all-downloader-v2');
   const youtube = await alldl.youtube("YOUTUBE_URL");
   console.log(youtube);
 
-  // Instagram (cookie optional)
-  const insta = await alldl.insta("INSTA_URL", "OPTIONAL_COOKIE");
+  // Instagram
+  const insta = await alldl.insta("INSTA_URL");
   console.log(insta);
-  
+
+  // Threads
+  const threads = await alldl.threads("THREADS_URL");
+  console.log(threads);
+
+  // Pinterest
+  const pinterest = await alldl.pinterest("PINTEREST_URL");
+  console.log(pinterest);
+
     // Capcut
   const capcut = await alldl.capcut("CAPCUT_URL");
   console.log(capcut);
+
+  // X (Twitter)
+  const x = await alldl.x("X_URL");
+  console.log(x);
+
+  // Kwai
+  const kwai = await alldl.kwai("KWAI_URL");
+  console.log(kwai);
 
 })();
 ```
@@ -131,30 +148,20 @@ const { alldl } = require('rahad-all-downloader-v2');
 
 - `alldl.tiktok(url)`
 - `alldl.fb(url)`
-- `alldl.insta(url, cookie?)`
+- `alldl.insta(url)`
 - `alldl.likee(url)`
 - `alldl.youtube(url)`
 - `alldl.threads(url)`
 - `alldl.pinterest(url)`
 - `alldl.capcut(url)`
-
----
-
-## 🍪 Cookie Management (Instagram & Threads)
-
-- Login to Instagram on PC Browser
-- Open **Developer Tools (F12)**
-- Go to **Network Tab**
-- Refresh page
-- Copy cookie from request headers
-- Use it as second parameter if auto cookie fails
+- `alldl.x(url)` / `alldl.twitter(url)`
+- `alldl.kwai(url)`
 
 ---
 
 ## 📅 Coming Soon
 
 - 🌟 Snapchat Video Downloader  
-- 🌟 Twitter (X) Media Extractor  
 - 🌟 YouTube Multi Resolution Support  
 
 ---
