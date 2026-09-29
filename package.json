@@ -1,43 +1,60 @@
 {
-  "name": "rahad-all-downloader-v2",
-  "version": "2.0.2",
-  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads & Pinterest",
-  "main": "index.js",
+  "author": "Mohammad Rahad <mohammadrahad1@yahoo.com> (https://www.facebook.com/md.rahad.hosain18)",
+  "bugs": {
+    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2/issues"
+  },
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "axios": "^1.6.0",
+    "cheerio": "^1.2.0",
+    "qs": "^6.11.2"
+  },
+  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter) & Kwai",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "files": [
     "index.js",
     "README.md",
     "package.json"
   ],
-  "scripts": {
-    "test": "node test.js",
-    "start": "node index.js"
-  },
+  "homepage": "https://www.npmjs.com/package/rahad-all-downloader-v2",
   "keywords": [
     "video-downloader",
     "tiktok-downloader",
     "facebook-downloader",
     "instagram-downloader",
     "youtube-downloader",
+    "threads-downloader",
+    "capcut-downloader",
+    "likee-downloader",
+    "pinterest-downloader",
+    "x-downloader",
+    "twitter-downloader",
+    "kwai-downloader",
     "rahad-all-downloader",
     "media-downloader",
-    "rahad"
+    "rahad",
+    "alldl",
+    "downloader-api",
+    "fb-downloader",
+    "insta-dl",
+    "tiktok-api",
+    "capcut-api",
+    "threads-api",
+    "twitter-api",
+    "kwai-api"
   ],
-  "author": "Mohammad Rahad <mohammadrahad1@yahoo.com> (https://www.facebook.com/md.rahad.hosain18)",
   "license": "MIT",
+  "main": "index.js",
+  "name": "rahad-all-downloader-v2",
   "repository": {
     "type": "git",
     "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2.git"
   },
-  "bugs": {
-    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2/issues"
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js"
   },
-  "homepage": "https://www.npmjs.com/package/rahad-all-downloader-v2",
-  "dependencies": {
-    "@distube/ytdl-core": "^4.16.12",
-    "axios": "^1.6.0",
-    "qs": "^6.11.2"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  }
+  "version": "2.0.4"
 }
