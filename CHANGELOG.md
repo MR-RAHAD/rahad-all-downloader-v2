@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.0.7] - 2026-10-01
+
+### Changed
+- **Rebuilt `index.js` with full two-layer obfuscation** (javascript-obfuscator + XOR eval pack) — second attempt at publishing the obfuscated build after 2.0.5 was rejected by npm's publish-time scan. Same features, same API as 2.0.6.
+
 ## [2.0.6] - 2026-09-30
 
 ### Changed
