@@ -51,7 +51,7 @@
     "test": "node test.js",
     "release": "node release.js"
   },
-  "version": "2.0.5",
+  "version": "2.0.6",
   "files": [
     "index.js",
     "index.mjs",
