@@ -106,6 +106,53 @@ const { alldl } = require('rahad-all-downloader-v2');
 
 ---
 
+## ⬇️ Download to Disk
+
+Shudhu URL na — chaile direct file hishebe save korte paro, progress callback soho:
+
+```js
+const { alldl } = require('rahad-all-downloader-v2');
+
+const file = await alldl.download(
+  'https://www.tiktok.com/@user/video/1234567890',
+  './videos/', // folder dile filename auto (title theke), file path dile oitai
+  {
+    onProgress: ({ percent, done, total }) =>
+      console.log(`Downloading... ${percent ?? '?'}%`),
+  }
+);
+
+console.log(file.path);  // "./videos/Funny cat video.mp4"
+console.log(file.bytes); // file size in bytes
+```
+
+## 📚 Batch Download
+
+Ekbate onek URL — ekta fail korleo baki gula thambe na:
+
+```js
+const results = await alldl.batch(
+  ['TIKTOK_URL', 'IG_URL', 'YT_URL'],
+  {
+    concurrency: 3, // ekshathe koyta cholbe
+    onItem: (item, i) => console.log(i, item.success ? 'done' : item.error),
+  }
+);
+// results[i] = { success: true, url, metadata, data } ba { success: false, url, error }
+```
+
+## 🔁 Auto-Retry & Quality Preference
+
+```js
+// Transient fail hole 2 bar abar try korbe (backoff soho)
+const r = await alldl('TIKTOK_URL', { retries: 2 });
+
+// X/Twitter: 720p chaile er <= closest quality select hobe
+const x = await alldl.x('X_URL', { quality: '720p' });
+```
+
+---
+
 ## 🎯 Platform-Specific Methods
 
 Need rich metadata — likes, comments, thumbnails, duration? Call the platform directly:
