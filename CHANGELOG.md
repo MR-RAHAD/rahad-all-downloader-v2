@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.0.6] - 2026-09-30
+
+### Changed
+- **Rebuilt `index.js` with standard minification** (terser) instead of heavy obfuscation — npm's publish-time security scan rejected 2.0.5's obfuscated build, so this version ships minified code (mangled names, no eval packer) to pass the automated review. Same features, same API.
+
 ## [Unreleased]
 
 ### Added
