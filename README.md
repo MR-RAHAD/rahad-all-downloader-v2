@@ -1,26 +1,42 @@
-<h1 align="center">⚡ Rahad All Downloader V2</h1>
+<div align="center">
 
-<p align="center">
-  <strong>Blazing-fast, dependency-light, all-in-one media downloader for 12 social platforms.</strong><br>
-  One function. Any link. Direct download URLs — no watermark, no login, no cookies.
-</p>
+# ⚡ RAHAD ALL DOWNLOADER V2
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/rahad-all-downloader-v2">
-    <img alt="npm version" src="https://img.shields.io/npm/v/rahad-all-downloader-v2.svg?style=flat-square&color=cb3837">
-  </a>
-  <a href="https://www.npmjs.com/package/rahad-all-downloader-v2">
-    <img src="https://img.shields.io/npm/dm/rahad-all-downloader-v2.svg?style=flat-square" alt="npm downloads">
-  </a>
-  <img alt="license" src="https://img.shields.io/npm/l/rahad-all-downloader-v2.svg?style=flat-square">
-  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D16-339933?style=flat-square&logo=node.js">
-  <a href="https://socket.dev/npm/package/rahad-all-downloader-v2">
-    <img src="https://socket.dev/api/badge/npm/package/rahad-all-downloader-v2" alt="Socket Badge">
-  </a>
-  <a href="https://www.jsdelivr.com/package/npm/rahad-all-downloader-v2">
-    <img src="https://data.jsdelivr.com/v1/package/npm/rahad-all-downloader-v2/badge" alt="jsDelivr">
-  </a>
-</p>
+### *One Package. Every Platform. Zero Hassle.*
+
+**The fastest all-in-one media downloader for Node.js** — paste any social media link and get direct, watermark-free download URLs in milliseconds. No login. No cookies. No API keys.
+
+<br>
+
+[![npm version](https://img.shields.io/npm/v/rahad-all-downloader-v2?style=for-the-badge&color=cb3837&logo=npm)](https://www.npmjs.com/package/rahad-all-downloader-v2)
+[![npm downloads](https://img.shields.io/npm/dm/rahad-all-downloader-v2?style=for-the-badge&color=blue)](https://www.npmjs.com/package/rahad-all-downloader-v2)
+[![license](https://img.shields.io/npm/l/rahad-all-downloader-v2?style=for-the-badge&color=green)](https://github.com/MR-RAHAD/rahad-all-downloader-v2/blob/main/LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D16-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+
+<br>
+
+[![Socket Badge](https://socket.dev/api/badge/npm/package/rahad-all-downloader-v2)](https://socket.dev/npm/package/rahad-all-downloader-v2)
+[![jsDelivr](https://data.jsdelivr.com/v1/package/npm/rahad-all-downloader-v2/badge)](https://www.jsdelivr.com/package/npm/rahad-all-downloader-v2)
+[![GitHub](https://img.shields.io/github/stars/MR-RAHAD/rahad-all-downloader-v2?style=social)](https://github.com/MR-RAHAD/rahad-all-downloader-v2)
+
+</div>
+
+---
+
+## ✨ Why This Package?
+
+<table>
+<tr>
+<td align="center">🚀<br><b>Blazing Fast</b><br><sub>Optimized extraction with parallel backend fallbacks</sub></td>
+<td align="center">🔓<br><b>No Watermark</b><br><sub>Clean HD videos, straight from the source</sub></td>
+<td align="center">🍪<br><b>No Cookies Needed</b><br><sub>Works out of the box, zero setup</sub></td>
+</tr>
+<tr>
+<td align="center">🌐<br><b>11 Platforms</b><br><sub>TikTok, FB, IG, YT, X & more in one call</sub></td>
+<td align="center">📦<br><b>Zero Bloat</b><br><sub>Lightweight with minimal dependencies</sub></td>
+<td align="center">📘<br><b>TypeScript Ready</b><br><sub>Full type definitions + native ESM support</sub></td>
+</tr>
+</table>
 
 ---
 
@@ -30,40 +46,46 @@
 npm install rahad-all-downloader-v2
 ```
 
+> **Requirements:** Node.js ≥ 16
+
 ---
 
 ## 🌐 Supported Platforms
 
-| Platform | Watermark-Free | Audio / MP3 | Notes |
-|----------|:---:|:---:|-------|
-| **TikTok** | ✅ | ✅ | HD video, no watermark, MP3 extraction |
-| **Facebook** | ✅ | – | HD & SD video links |
-| **Instagram** | ✅ | – | Reels, Posts, IGTV — no cookie required |
-| **Threads** | ✅ | – | High-quality video & image extraction |
-| **YouTube** | ✅ | – | Via Invidious API with automatic instance fallback |
-| **X (Twitter)** | ✅ | – | Multi-quality video & photo extraction |
-| **Snapchat** | ✅ | – | Spotlight & Stories video/photo extraction |
-| **Pinterest** | ✅ | – | Direct MP4 media extraction |
-| **Likee** | ✅ | – | Direct MP4 media extraction |
-| **CapCut** | ✅ | – | Direct MP4 media extraction |
-| **Kwai** | ✅ | – | Direct video extraction |
+| Platform | HD Video | No Watermark | Audio / MP3 | Extra |
+|:---------|:--------:|:------------:|:-----------:|-------|
+| 🎵 **TikTok** | ✅ | ✅ | ✅ | No-watermark HD + MP3 extraction |
+| 📘 **Facebook** | ✅ | ✅ | – | HD & SD quality options |
+| 📸 **Instagram** | ✅ | ✅ | – | Reels, Posts, IGTV — no login needed |
+| 🧵 **Threads** | ✅ | ✅ | – | High-quality video & images |
+| ▶️ **YouTube** | ✅ | ✅ | – | Auto instance fallback via Invidious |
+| ✖️ **X (Twitter)** | ✅ | ✅ | – | Multi-quality video & photos |
+| 👻 **Snapchat** | ✅ | ✅ | – | Spotlight & Stories |
+| 📌 **Pinterest** | ✅ | ✅ | – | Direct MP4 extraction |
+| 🎭 **Likee** | ✅ | ✅ | – | Direct MP4 extraction |
+| ✂️ **CapCut** | ✅ | ✅ | – | Direct MP4 extraction |
+| 🔥 **Kwai** | ✅ | ✅ | – | Direct video extraction |
 
 ---
 
 ## 🚀 Quick Start
 
-Pass any supported link to `alldl()` — it auto-detects the platform:
+One function handles everything — it auto-detects the platform from the URL:
 
 ```js
 const { alldl } = require('rahad-all-downloader-v2');
 
 (async () => {
   const result = await alldl('https://www.tiktok.com/@user/video/1234567890');
-  console.log(result.data.videoUrl); // direct download link
+
+  console.log(result.data.title);    // "Funny cat video 🐱"
+  console.log(result.data.videoUrl); // "https://.../download.mp4" — direct link!
+  console.log(result.data.source);   // "TikTok"
 })();
 ```
 
-### Response Format
+<details>
+<summary><b>📤 Click to see full response format</b></summary>
 
 ```json
 {
@@ -80,57 +102,61 @@ const { alldl } = require('rahad-all-downloader-v2');
 }
 ```
 
+</details>
+
 ---
 
 ## 🎯 Platform-Specific Methods
 
-For full metadata (likes, comments, thumbnails, duration), call the platform methods directly:
+Need rich metadata — likes, comments, thumbnails, duration? Call the platform directly:
 
 ```js
 const { alldl } = require('rahad-all-downloader-v2');
 
 (async () => {
-  const tiktok   = await alldl.tiktok('TIKTOK_URL');
-  const facebook = await alldl.fb('FB_URL');
-  const insta    = await alldl.insta('INSTAGRAM_URL');
-  const threads  = await alldl.threads('THREADS_URL');
-  const youtube  = await alldl.youtube('YOUTUBE_URL');
-  const x        = await alldl.x('X_URL');
-  const snapchat = await alldl.snapchat('SNAPCHAT_URL');
-  const pinterest= await alldl.pinterest('PINTEREST_URL');
-  const likee    = await alldl.likee('LIKEE_URL');
-  const capcut   = await alldl.capcut('CAPCUT_URL');
-  const kwai     = await alldl.kwai('KWAI_URL');
+  const tiktok    = await alldl.tiktok('TIKTOK_URL');
+  const facebook  = await alldl.fb('FACEBOOK_URL');
+  const instagram = await alldl.insta('INSTAGRAM_URL');
+  const threads   = await alldl.threads('THREADS_URL');
+  const youtube   = await alldl.youtube('YOUTUBE_URL');
+  const x         = await alldl.x('X_URL');
+  const snapchat  = await alldl.snapchat('SNAPCHAT_URL');
+  const pinterest = await alldl.pinterest('PINTEREST_URL');
+  const likee     = await alldl.likee('LIKEE_URL');
+  const capcut    = await alldl.capcut('CAPCUT_URL');
+  const kwai      = await alldl.kwai('KWAI_URL');
+
+  console.log(tiktok);
 })();
 ```
 
-### Available Methods
+### 📋 Method Reference
 
-| Method | Alias |
-|--------|-------|
-| `alldl.tiktok(url)` | – |
-| `alldl.fb(url)` | – |
-| `alldl.insta(url)` | – |
-| `alldl.threads(url)` | – |
-| `alldl.youtube(url)` | – |
-| `alldl.x(url)` | `alldl.twitter(url)` |
-| `alldl.snapchat(url)` | – |
-| `alldl.pinterest(url)` | – |
-| `alldl.likee(url)` | – |
-| `alldl.capcut(url)` | – |
-| `alldl.kwai(url)` | – |
+| Method | Alias | Platform |
+|--------|-------|----------|
+| `alldl.tiktok(url)` | – | TikTok |
+| `alldl.fb(url)` | – | Facebook |
+| `alldl.insta(url)` | – | Instagram |
+| `alldl.threads(url)` | – | Threads |
+| `alldl.youtube(url)` | – | YouTube |
+| `alldl.x(url)` | `alldl.twitter(url)` | X (Twitter) |
+| `alldl.snapchat(url)` | – | Snapchat |
+| `alldl.pinterest(url)` | – | Pinterest |
+| `alldl.likee(url)` | – | Likee |
+| `alldl.capcut(url)` | – | CapCut |
+| `alldl.kwai(url)` | – | Kwai |
 
 ---
 
-## 📘 TypeScript & ESM Support
+## 📘 TypeScript & ESM
 
-Full TypeScript definitions are included, and native ESM is supported out of the box:
+Full type definitions ship with the package. Native ESM works out of the box:
 
 ```ts
 import { alldl } from 'rahad-all-downloader-v2';
 
 const res = await alldl('https://vt.tiktok.com/XXXX/');
-console.log(res.data.videoUrl); // string — direct download link
+const url: string = res.data.videoUrl; // fully typed ✅
 ```
 
 ---
@@ -142,7 +168,7 @@ const { alldl } = require('rahad-all-downloader-v2');
 
 try {
   const result = await alldl('https://www.tiktok.com/@user/video/1234567890');
-  console.log(result);
+  // use result.data.videoUrl
 } catch (error) {
   console.error('Download failed:', error.message);
 }
@@ -150,34 +176,76 @@ try {
 
 ---
 
+## ❓ FAQ
+
+<details>
+<summary><b>Do I need an API key or login?</b></summary>
+<br>
+No. The package works out of the box — no API keys, no cookies, no login required.
+</details>
+
+<details>
+<summary><b>Does it remove the TikTok watermark?</b></summary>
+<br>
+Yes. TikTok videos are extracted in HD without any watermark.
+</details>
+
+<details>
+<summary><b>Which Node.js versions are supported?</b></summary>
+<br>
+Node.js 16 and above.
+</details>
+
+<details>
+<summary><b>Can I use it with TypeScript / ESM?</b></summary>
+<br>
+Yes. Type definitions (<code>index.d.ts</code>) and native ESM (<code>index.mjs</code>) are included.
+</details>
+
+---
+
 ## 📅 Roadmap
 
-- 🌟 YouTube multi-resolution support
+- [ ] 🌟 YouTube multi-resolution support
+- [ ] 🎧 More audio extraction options
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome.  
+Contributions, issues, and feature requests are welcome!<br>
 Feel free to open an issue or submit a pull request on [GitHub](https://github.com/MR-RAHAD/rahad-all-downloader-v2).
+
+⭐ **If this package helped you, please give it a star!**
 
 ---
 
 ## 👨‍💻 Developer
 
-**Mohammad Rahad**
+<div align="center">
 
-- 📧 Email: mdrahadhossain00@gmail.com
-- 💬 Telegram: [@rabbyhosainRahad](https://t.me/rabbyhosainRahad)
-- 👍 Facebook: [md.rahad.hosain18](https://www.facebook.com/md.rahad.hosain18)
+### Mohammad Rahad
+
+[![Email](https://img.shields.io/badge/Email-mdrahadhossain00@gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mdrahadhossain00@gmail.com)
+[![Telegram](https://img.shields.io/badge/Telegram-@rabbyhosainRahad-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/rabbyhosainRahad)
+[![Facebook](https://img.shields.io/badge/Facebook-Mohammad_Rahad-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/md.rahad.hosain18)
+
+</div>
 
 ---
 
 ## 🤖 Worm AI API — For Sale
 
-The **Worm AI API** script (Grok-powered AI API) is available for purchase.  
-To buy, contact me on Telegram: [@rabbyhosainRahad](https://t.me/rabbyhosainRahad)
+> The **Worm AI API** (Grok-powered AI API for developers) is available for purchase.
+
+📩 Contact on Telegram to buy: **[@rabbyhosainRahad](https://t.me/rabbyhosainRahad)**
 
 ---
 
-<p align="center">© 2025 Mohammad Rahad — MIT License</p>
+<div align="center">
+
+**© 2025 Mohammad Rahad — MIT License**
+
+*Built with ❤️ in Bangladesh*
+
+</div>
