@@ -1,76 +1,71 @@
 {
-  "author": "Mohammad Rahad <mohammadrahad1@yahoo.com> (https://www.facebook.com/md.rahad.hosain18)",
-  "bugs": {
-    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2/issues"
-  },
+  "author": "Mohammad Rahad <https://www.facebook.com/md.rahad.hosain18>",
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
-    "axios": "^1.6.0",
+    "axios": "^1.20.0",
     "cheerio": "^1.2.0",
-    "qs": "^6.11.2"
+    "qs": "^6.16.0"
   },
-  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter) & Kwai",
+  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter), Kwai & Snapchat",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16"
   },
-  "files": [
-    "index.js",
-    "README.md",
-    "package.json"
-  ],
-  "homepage": "https://www.npmjs.com/package/rahad-all-downloader-v2",
   "keywords": [
+    "downloader",
+    "tiktok",
+    "facebook",
+    "instagram",
+    "youtube",
+    "capcut",
+    "twitter",
+    "threads",
+    "likee",
+    "pinterest",
+    "kwai",
+    "video",
+    "alldl",
     "video-downloader",
+    "social-media-downloader",
+    "reels-downloader",
+    "shorts-downloader",
+    "no-watermark",
+    "snapchat-downloader",
+    "snapchat-api",
+    "spotlight-downloader",
     "tiktok-downloader",
     "facebook-downloader",
     "instagram-downloader",
     "youtube-downloader",
     "threads-downloader",
     "capcut-downloader",
-    "likee-downloader",
-    "pinterest-downloader",
-    "x-downloader",
     "twitter-downloader",
-    "kwai-downloader",
-    "rahad-all-downloader",
+    "x-downloader",
     "media-downloader",
-    "rahad",
-    "alldl",
-    "downloader-api",
-    "fb-downloader",
-    "insta-dl",
-    "tiktok-api",
-    "capcut-api",
-    "threads-api",
-    "twitter-api",
-    "kwai-api",
-    "snapchat-downloader",
-    "snapchat-api",
-    "no-watermark",
-    "reels-downloader",
-    "shorts-downloader",
     "video-download",
-    "tiktok",
-    "instagram",
-    "facebook",
-    "youtube",
-    "spotlight-downloader",
-    "mp4-downloader",
-    "threads",
-    "likee",
-    "pinterest",
-    "capcut"
+    "mp4-downloader"
   ],
   "license": "MIT",
   "main": "index.js",
   "name": "rahad-all-downloader-v2",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2.git"
-  },
   "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
+    "test": "node test.js",
+    "release": "node release.js"
   },
-  "version": "2.0.4"
+  "version": "2.0.5",
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "package.json"
+  ],
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  }
 }
