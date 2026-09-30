@@ -1,0 +1,44 @@
+# Changelog
+
+All notable changes to `rahad-all-downloader-v2` will be documented here.
+
+## [Unreleased]
+
+### Added
+- **`alldl.download(url, dest, { onProgress })`** — resolve + direct file download to disk (folder dile filename title theke auto, file path dile oitai; overwrite hole `(1)`, `(2)` add hoy)
+- **`alldl.batch(urls, { concurrency, onItem })`** — ekbare onek URL, per-item `{ success, ... }` / `{ success: false, error }`, kokhono throw kore na
+- **`alldl(url, { retries })`** — transient fail e backoff soho auto-retry
+- **`alldl.x(url, { quality: '720p' })`** — quality preference (requested er <= closest quality select hoy)
+- Type definitions for all new methods (`index.d.ts`)
+
+## [2.0.5] - 2026-09-29
+
+### Added
+- **Snapchat** downloader (`alldl.snapchat`) — spotlight/stories video & photo via getindevice API (Coming Soon list theke done ✅)
+- **TypeScript definitions** (`index.d.ts`) — autocomplete + type safety
+- **ESM support** — `import { alldl } from 'rahad-all-downloader-v2'` ekhon kaj kore
+- **Live demo page** (`demo.html`) — browser thekei TikTok test kora jay
+- `CHANGELOG.md`
+
+### Changed
+- 11 → **12 ta platform**: TikTok, Facebook, Instagram, YouTube, CapCut, X/Twitter, Threads, Likee, Pinterest, Kwai, Snapchat
+
+## [2.0.4] - 2026-09-29
+
+### Added
+- **X (Twitter)** downloader (`alldl.x` / `alldl.twitter`) — multi-quality video & photo
+- **Kwai** downloader (`alldl.kwai`) — direct video extraction
+
+### Changed
+- TikTok backend → TikWM API + mirror fallback
+- Facebook backend → fdown API (ager direct scrape bot-blocked chilo)
+- Instagram backend → snapinsta API, **ekhon kono cookie lage na**
+- YouTube backend → Invidious API + auto instance discovery (ytdl-core fallback)
+- CapCut backend → 3bic primary + capdownloader fallback
+
+### Fixed
+- Missing `cheerio` dependency add (X/Twitter er jonno lage)
+
+## [2.0.3]
+
+- Ager stable release (TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut)
