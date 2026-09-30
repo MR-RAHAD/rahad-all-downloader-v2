@@ -1,0 +1,71 @@
+{
+  "author": "Mohammad Rahad <https://www.facebook.com/md.rahad.hosain18>",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "axios": "^1.20.0",
+    "cheerio": "^1.2.0",
+    "qs": "^6.16.0"
+  },
+  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter), Kwai & Snapchat",
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "downloader",
+    "tiktok",
+    "facebook",
+    "instagram",
+    "youtube",
+    "capcut",
+    "twitter",
+    "threads",
+    "likee",
+    "pinterest",
+    "kwai",
+    "video",
+    "alldl",
+    "video-downloader",
+    "social-media-downloader",
+    "reels-downloader",
+    "shorts-downloader",
+    "no-watermark",
+    "snapchat-downloader",
+    "snapchat-api",
+    "spotlight-downloader",
+    "tiktok-downloader",
+    "facebook-downloader",
+    "instagram-downloader",
+    "youtube-downloader",
+    "threads-downloader",
+    "capcut-downloader",
+    "twitter-downloader",
+    "x-downloader",
+    "media-downloader",
+    "video-download",
+    "mp4-downloader"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "rahad-all-downloader-v2",
+  "scripts": {
+    "test": "node test.js",
+    "release": "node release.js"
+  },
+  "version": "2.0.6",
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "package.json"
+  ],
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  }
+}
