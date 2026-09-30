@@ -291,6 +291,31 @@ Feel free to open an issue or submit a pull request on [GitHub](https://github.c
 
 <div align="center">
 
+## ☕ Buy Me a Coffee
+
+*If this package saved you hours of work, a small donation keeps it alive and updated* ❤️
+
+</div>
+
+### 💰 Donate with Crypto (USDT)
+
+| Network | Address |
+|:--------|:--------|
+| 🟡 **BEP20** — BNB Smart Chain | `0x2efda5b5834ad178900f2a67cbb2c567692f4d00` |
+| 🔴 **TRC20** — Tron | `TN7xQw7XosR2CVAa1DWWmiSLknDrSUQ1c2` |
+
+> ⚠️ Send **USDT only**, on the **matching network**. Funds sent on the wrong network are lost forever.
+
+### 🟡 Binance Pay — zero fees
+
+**Binance UID:** `979450444`
+
+*Just send to the UID directly inside Binance — no network fees!*
+
+---
+
+<div align="center">
+
 **© 2025 Mohammad Rahad — MIT License**
 
 *Built with ❤️ in Bangladesh*
