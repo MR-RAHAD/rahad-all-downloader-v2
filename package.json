@@ -45,13 +45,21 @@
     "mp4-downloader"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MR-RAHAD/rahad-all-downloader-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MR-RAHAD/rahad-all-downloader-v2/issues"
+  },
+  "homepage": "https://github.com/MR-RAHAD/rahad-all-downloader-v2#readme",
   "main": "index.js",
   "name": "rahad-all-downloader-v2",
   "scripts": {
     "test": "node test.js",
     "release": "node release.js"
   },
-  "version": "2.0.8",
+  "version": "2.0.9",
   "files": [
     "index.js",
     "index.mjs",
