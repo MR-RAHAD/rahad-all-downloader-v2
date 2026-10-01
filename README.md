@@ -15,7 +15,7 @@
 
 <br>
 
-[![Socket Badge](https://socket.dev/api/badge/npm/package/rahad-all-downloader-v2)](https://socket.dev/npm/package/rahad-all-downloader-v2)
+[![Socket Badge](https://badge.socket.dev/npm/package/rahad-all-downloader-v2/latest)](https://socket.dev/npm/package/rahad-all-downloader-v2)
 [![jsDelivr](https://data.jsdelivr.com/v1/package/npm/rahad-all-downloader-v2/badge)](https://www.jsdelivr.com/package/npm/rahad-all-downloader-v2)
 [![GitHub](https://img.shields.io/github/stars/MR-RAHAD/rahad-all-downloader-v2?style=social)](https://github.com/MR-RAHAD/rahad-all-downloader-v2)
 
