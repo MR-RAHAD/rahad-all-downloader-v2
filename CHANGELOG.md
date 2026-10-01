@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.0.10] - 2026-10-01
+
+### Fixed
+- **Cleared Socket's 9 high-severity dependency alerts** ("Socket optimized override available") by adding `overrides` in package.json pointing at Socket's optimized registry builds (`@socketregistry/...`) for `es-define-property`, `es-set-tostringtag`, `function-bind`, `gopd`, `has-symbols`, `has-tostringtag`, `hasown`, `safer-buffer` and `side-channel`. No code changes — same API, all tests pass.
+
 ## [2.0.7] - 2026-10-01
 
 ### Changed
