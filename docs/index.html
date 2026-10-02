@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rahad-all-downloader-v2 — Live Demo</title>
+<meta name="description" content="Try rahad-all-downloader-v2 live: paste any TikTok, Instagram, Facebook, YouTube link and get a direct download URL.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 16px; }
+  .wrap { width: 100%; max-width: 640px; }
+  h1 { font-size: 28px; text-align: center; margin-bottom: 6px; }
+  h1 .bolt { color: #f5c518; }
+  p.sub { text-align: center; color: #9aa0b4; margin-bottom: 28px; font-size: 15px; }
+  .platforms { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px; }
+  .platforms span { background: #1a1e2a; border: 1px solid #2a3040; padding: 5px 12px; border-radius: 20px; font-size: 13px; color: #c6cbd8; }
+  .box { background: #161a25; border: 1px solid #2a3040; border-radius: 12px; padding: 24px; }
+  input[type=url] { width: 100%; padding: 13px 14px; border-radius: 8px; border: 1px solid #343b52; background: #0f1320; color: #fff; font-size: 15px; outline: none; }
+  input[type=url]:focus { border-color: #4f7cff; }
+  button.go { width: 100%; margin-top: 12px; padding: 13px; border: none; border-radius: 8px; background: linear-gradient(135deg, #4f7cff, #7b5cff); color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+  button.go:disabled { opacity: .6; cursor: wait; }
+  #result { margin-top: 20px; display: none; }
+  #result.show { display: block; }
+  .title { font-weight: 600; margin-bottom: 10px; word-break: break-word; }
+  video { width: 100%; border-radius: 8px; background: #000; max-height: 360px; }
+  a.dl { display: inline-block; margin-top: 12px; padding: 11px 22px; background: #22c55e; color: #06270f; font-weight: 700; border-radius: 8px; text-decoration: none; }
+  .err { color: #ff7b7b; background: #2a1414; border: 1px solid #5c2323; padding: 12px; border-radius: 8px; margin-top: 16px; display: none; }
+  .note { margin-top: 24px; text-align: center; color: #6b7280; font-size: 13px; }
+  .note a { color: #8ea2ff; }
+  .spinner { text-align: center; margin-top: 16px; display: none; color: #9aa0b4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="bolt">⚡</span> rahad-all-downloader-v2</h1>
+  <p class="sub">Live demo — paste any social media link, get a direct download URL.</p>
+  <div class="platforms">
+    <span>TikTok</span><span>Instagram</span><span>Facebook</span><span>YouTube</span><span>X</span><span>Snapchat</span><span>Threads</span><span>Pinterest</span><span>Likee</span><span>CapCut</span><span>Kwai</span>
+  </div>
+  <div class="box">
+    <input type="url" id="url" placeholder="Paste video link here… (e.g. tiktok.com, instagram.com, youtube.com)">
+    <button class="go" id="go">Get Download Link</button>
+    <div class="spinner" id="spin">⏳ Extracting… (first request may take ~50s on free hosting)</div>
+    <div id="result">
+      <div class="title" id="rTitle"></div>
+      <video id="rVideo" controls playsinline></video><br>
+      <a class="dl" id="rDl" href="#" download>⬇ Download Video</a>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+  <p class="note">Powered by <a href="https://www.npmjs.com/package/rahad-all-downloader-v2" target="_blank" rel="noopener">rahad-all-downloader-v2</a> ·
+    <a href="https://github.com/MR-RAHAD/rahad-all-downloader-v2" target="_blank" rel="noopener">⭐ Star on GitHub</a><br>
+    Demo rate limit: 20 requests / 5 min per visitor.</p>
+</div>
+<script>
+const API = "https://downloader-demo-api.onrender.com/api/download";
+const $ = id => document.getElementById(id);
+
+$("go").onclick = async () => {
+  const url = $("url").value.trim();
+  $("err").style.display = "none";
+  $("result").classList.remove("show");
+  if (!url) { showErr("Please paste a link first."); return; }
+  $("go").disabled = true;
+  $("spin").style.display = "block";
+  try {
+    const r = await fetch(API + "?url=" + encodeURIComponent(url));
+    const d = await r.json();
+    if (d.status !== "success" || !d.videoUrl) throw new Error(d.response || "Extraction failed.");
+    $("rTitle").textContent = d.title || "Video";
+    $("rVideo").src = d.videoUrl;
+    $("rDl").href = d.videoUrl;
+    $("result").classList.add("show");
+  } catch (e) {
+    showErr(e.message || "Something went wrong. Try again.");
+  } finally {
+    $("go").disabled = false;
+    $("spin").style.display = "none";
+  }
+};
+$("url").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
+function showErr(m) { const el = $("err"); el.textContent = m; el.style.display = "block"; }
+</script>
+</body>
+</html>
