@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.0.11] - 2026-10-02
+
+### Fixed
+- **Facebook downloads now include audio.** The HD links returned for Facebook are DASH video-only streams (no sound). The resolver now prefers the muxed "Download Video" rendition (video + audio) so downloaded Facebook videos play with sound.
+
 ## [2.0.10] - 2026-10-01
 
 ### Fixed
