@@ -4,7 +4,10 @@
 
 ### *One Package. Every Platform. Zero Hassle.*
 
-**The fastest all-in-one media downloader for Node.js** — paste any social media link and get direct, watermark-free download URLs in milliseconds. No login. No cookies. No API keys.
+**The fastest all-in-one media downloader for Node.js**
+
+🎥 **[Try the Live Demo](https://mr-rahad.github.io/rahad-all-downloader-v2/)** — paste any link, get a download URL instantly.
+ — paste any social media link and get direct, watermark-free download URLs in milliseconds. No login. No cookies. No API keys.
 
 <br>
 
