@@ -68,6 +68,30 @@ npm install rahad-all-downloader-v2
 
 ---
 
+## 🔎 Looking for a Video Downloader?
+
+**rahad-all-downloader-v2** is an all-in-one media downloader for Node.js. If you searched for any of these, you're in the right place:
+
+### TikTok Video Downloader
+Download TikTok videos without watermark in HD, plus TikTok MP3 audio extraction — no login required.
+
+### Instagram Video Downloader
+Download Instagram Reels, posts and IGTV videos in high quality without logging in.
+
+### Facebook Video Downloader
+Download Facebook videos in HD & SD quality with a single function call.
+
+### YouTube Video Downloader
+Download YouTube videos and Shorts with automatic fallback for maximum reliability.
+
+### Twitter / X Video Downloader
+Download X (Twitter) videos and photos in multiple qualities.
+
+### Snapchat, Pinterest, Threads, Likee, CapCut & Kwai Downloader
+Also supports Snapchat Spotlight & Stories, Pinterest, Threads, Likee, CapCut and Kwai — 11 platforms in one lightweight package.
+
+---
+
 ## 🚀 Quick Start
 
 One function handles everything — it auto-detects the platform from the URL:
