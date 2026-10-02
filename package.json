@@ -70,7 +70,7 @@
     "test": "node test.js",
     "release": "node release.js"
   },
-  "version": "2.0.10",
+  "version": "2.0.11",
   "files": [
     "index.js",
     "index.mjs",
