@@ -662,29 +662,16 @@ const pinterest = async (url) => {
       },
     });
 
-    const arrMatch = html.match(/"videos":\{"videoUrls":\[(.*?)\]\}/s);
-    let urls = [];
-    if (arrMatch) {
-      const raw = arrMatch[1].match(/"(https:\/\/v1\.pinimg\.com\/videos\/[^"]+)"/g) || [];
-      urls = raw.map((s) => s.slice(1, -1));
-    }
-    // legacy fallback (older SSR markup with escaped slashes)
-    if (!urls.length) {
-      const legacy =
-        html.match(/"url":"(https:\/\/v1\.pinimg\.com\/videos\/[^"]*?expMp4[^"]*?\.mp4)"/) ||
-        html.match(/"url":"(https:\/\/v1\.pinimg\.com\/videos\/mc\/hls\/[^"]+\.m3u8)"/);
-      if (legacy) urls = [legacy[1]];
-    }
+    // Broad: v1.pinimg.com/videos URLs in ANY markup shape.
+    // Pinterest er SSR markup region/IP onujayi bodlay — specific JSON key te
+    // nirbhor na kore sob video URL tule ana hoy, tarpor best ta bacha hoy.
+    const raw = html.match(/https:\/\/v1\.pinimg\.com\/videos\/[^"\\\s]+/g) || [];
+    const urls = [...new Set(raw.map((u) => u.replace(/\\\//g, "/")))];
 
-    if (!urls.length) {
-      // Pinterest majhe majhe datacenter IP te khali/blocked page dey (video data chara).
-      // "videos" block e nai mane page e video data ashe nai — extractor bug na, environment issue.
-      if (!html.includes('"videos":'))
-        throw new Error(
-          "Pinterest Error: page contained no video data (empty/blocked response — datacenter IP? residential IP te try koro)"
-        );
-      throw new Error("Pinterest video not found (image pin / private / deleted hote pare)");
-    }
+    if (!urls.length)
+      throw new Error(
+        "Pinterest Error: page te kono video URL pelam na (image/private/deleted pin hote pare, or Pinterest khali page dise — residential IP te try koro)"
+      );
 
     const mp4h264 =
       urls.find((u) => /\.mp4($|\?)/.test(u) && /\/720p\/|expMp4/i.test(u)) ||
