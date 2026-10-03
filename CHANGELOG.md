@@ -2,6 +2,19 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.2.0] - 2026-10-03
+
+### Added
+- **`alldl.info(url, opts)` — metadata-only API (no download).** Returns `{ site, url, title, author:{name,url}, thumbnail, duration, description }` — missing fields are `null`, never fabricated.
+  - **YouTube**: oEmbed (title/author/thumbnail) + watch-page `lengthSeconds` + maxres thumbnail
+  - **TikTok**: oEmbed + page JSON duration (thumbnail CDN URLs are signed — expire hoy, sathe sathe use koro)
+  - **Vimeo**: oEmbed only (title/author/duration/thumbnail — richest free source)
+  - **Facebook/Instagram**: oEmbed via `alldl.info(url, { appToken: 'APP_ID|APP_SECRET' })` (user-supplied token, never shipped); without token → honest error
+  - **Pinterest**: og:title/og:description/og:image from pin page (duration: null)
+  - **Dailymotion**: player metadata (title/duration/thumbnail/author)
+  - **Others/unknown**: generic og: tag scrape with detected site name
+- TypeScript types: `InfoResult`, `InfoOptions`, `alldl.info`
+
 ## [2.1.0] - 2026-10-03
 
 ### Added
