@@ -39,7 +39,7 @@ export interface PlatformResult {
 }
 
 export interface AllDLOptions {
-  /** Transient fail hole kotobar abar try korbe (backoff soho). Default: 0 */
+  /** How many times to retry transient failures (with backoff). Default: 0 */
   retries?: number;
 }
 
@@ -63,9 +63,9 @@ export interface DownloadResult {
 }
 
 export interface BatchOptions extends AllDLOptions {
-  /** Ekshathe koyta request cholbe. Default: 3 */
+  /** Max concurrent requests. Default: 3 */
   concurrency?: number;
-  /** Proti item sesh hole call hobe */
+  /** Called when each item completes */
   onItem?: (item: BatchItem, index: number) => void;
 }
 
@@ -74,7 +74,7 @@ export type BatchItem =
   | { success: false; url: string; error: string };
 
 export interface XOptions {
-  /** Quality preference, jemon '720p' — er <= closest quality select hobe */
+  /** Quality preference, e.g. '720p' — selects the closest quality at or below it */
   quality?: string;
 }
 
@@ -90,14 +90,14 @@ export interface InfoResult {
   url: string;
   title: string | null;
   author: InfoAuthor;
-  /** Seconds, or null when not available. TikTok thumbnails are signed CDN URLs — expire hoy */
+  /** Seconds, or null when not available. TikTok thumbnails are signed CDN URLs — they expire */
   thumbnail: string | null;
   duration: number | null;
   description: string | null;
 }
 
 export interface InfoOptions {
-  /** Facebook/Instagram oEmbed er jonno: 'APP_ID|APP_SECRET' (user-supplied, kokhono hardcode koro na) */
+  /** For Facebook/Instagram oEmbed: 'APP_ID|APP_SECRET' (user-supplied, never hardcode) */
   appToken?: string;
 }
 
@@ -105,13 +105,14 @@ export interface AllDL {
   /** Auto-detect platform from URL → normalized `{ title, videoUrl, source }` */
   (url: string, opts?: AllDLOptions): Promise<NormalizedResult>;
   /**
-   * Resolve + file hishebe disk e save kore.
-   * `dest` folder hole filename auto (title theke), file path hole oitai use hobe.
+   * Resolves and saves to disk as a file.
+   * If `dest` is a folder, the filename is auto-generated from the title;
+   * if it is a file path, that path is used as-is.
    */
   download(url: string, dest: string, opts?: DownloadOptions): Promise<DownloadResult>;
   /**
-   * Ekbare onek URL — kokhono throw kore na,
-   * proti item `{ success, ... }` / `{ success: false, error }` akare ashe.
+   * Batch many URLs at once — never throws.
+   * Each item resolves to `{ success, ... }` or `{ success: false, error }`.
    */
   batch(urls: string[], opts?: BatchOptions): Promise<BatchItem[]>;
   /** TikTok — full data: no-watermark/watermark/music + stats */
@@ -143,10 +144,10 @@ export interface AllDL {
   /** Snapchat — spotlight/stories video & photo */
   snapchat(url: string): Promise<PlatformResult>;
   /**
-   * Metadata only — kono download na. Returns
+   * Metadata only — no download. Returns
    * `{ site, url, title, author:{name,url}, thumbnail, duration, description }`.
-   * Field na pele `null` ashe, kokhono banano data na.
-   * Facebook/Instagram er jonno `{ appToken: 'APP_ID|APP_SECRET' }` dite hobe.
+   * Unavailable fields are `null`, never fabricated data.
+   * For Facebook/Instagram, pass `{ appToken: 'APP_ID|APP_SECRET' }`.
    */
   info(url: string, opts?: InfoOptions): Promise<InfoResult>;
 }
