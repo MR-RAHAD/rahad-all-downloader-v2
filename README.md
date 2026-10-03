@@ -35,7 +35,7 @@
 <td align="center">🍪<br><b>No Cookies Needed</b><br><sub>Works out of the box, zero setup</sub></td>
 </tr>
 <tr>
-<td align="center">🌐<br><b>11 Platforms</b><br><sub>TikTok, FB, IG, YT, X & more in one call</sub></td>
+<td align="center">🌐<br><b>13 Platforms</b><br><sub>TikTok, FB, IG, YT, X & more in one call</sub></td>
 <td align="center">📦<br><b>Zero Bloat</b><br><sub>Lightweight with minimal dependencies</sub></td>
 <td align="center">📘<br><b>TypeScript Ready</b><br><sub>Full type definitions + native ESM support</sub></td>
 </tr>
@@ -68,6 +68,8 @@ npm install rahad-all-downloader-v2
 | 🎭 **Likee** | ✅ | ✅ | – | Direct MP4 extraction |
 | ✂️ **CapCut** | ✅ | ✅ | – | Direct MP4 extraction |
 | 🔥 **Kwai** | ✅ | ✅ | – | Direct video extraction |
+| 🎞️ **Dailymotion** | ✅ | ✅ | – | HLS stream (ffmpeg diye MP4) |
+| 🎥 **Vimeo** | ✅ | ✅ | – | Direct progressive MP4 |
 
 ---
 
