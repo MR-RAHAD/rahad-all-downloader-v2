@@ -17,7 +17,7 @@
     "safer-buffer": "npm:@socketregistry/safer-buffer@^1",
     "side-channel": "npm:@socketregistry/side-channel@^1"
   },
-  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter), Kwai & Snapchat",
+  "description": "All-in-one media downloader for TikTok, Facebook, Instagram, YouTube, Likee, Threads, Pinterest, CapCut, X (Twitter), Kwai, Snapchat, Dailymotion & Vimeo",
   "engines": {
     "node": ">=16"
   },
@@ -70,7 +70,7 @@
     "test": "node test.js",
     "release": "node release.js"
   },
-  "version": "2.0.11",
+  "version": "2.1.0",
   "files": [
     "index.js",
     "index.mjs",
