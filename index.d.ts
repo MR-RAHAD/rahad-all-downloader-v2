@@ -109,6 +109,10 @@ export interface AllDL {
   capcut(url: string): Promise<PlatformResult>;
   /** Kwai — direct video */
   kwai(url: string): Promise<PlatformResult>;
+  /** Dailymotion — HLS master stream */
+  dailymotion(url: string): Promise<PlatformResult>;
+  /** Vimeo — direct progressive MP4 */
+  vimeo(url: string): Promise<PlatformResult>;
   /** X (Twitter) — multi-quality video & photo */
   x(url: string, opts?: XOptions): Promise<PlatformResult>;
   /** X (Twitter) — alias of `x` */
