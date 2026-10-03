@@ -1156,6 +1156,230 @@ function pickTitle(result) {
   return d.title || d.caption || "Social Media Video";
 }
 
+/* ================= info(url, opts) — metadata only, no download (2.2.0) =================
+ * Returns: { site, url, title, author:{name,url}, thumbnail, duration (seconds|null), description }
+ * Missing fields → null, never fabricated.
+ * Facebook/Instagram oEmbed needs an app token: alldl.info(url, { appToken: 'ID|SECRET' })
+ * (user-supplied, never shipped). Without it → honest error.
+ * NOTE: TikTok thumbnail CDN URLs are signed and expire — fetch/use promptly.
+ */
+const infoShape = (site, url, f = {}) => ({
+  site,
+  url,
+  title: f.title ?? null,
+  author: { name: f.authorName ?? null, url: f.authorUrl ?? null },
+  thumbnail: f.thumbnail ?? null,
+  duration: f.duration ?? null,
+  description: f.description ?? null,
+});
+
+const ogScrape = async (url) => {
+  const { data: html } = await http.get(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+    timeout: 25000,
+  });
+  const meta = (prop) => {
+    const m =
+      html.match(new RegExp(`<meta[^>]+property="${prop}"[^>]+content="([^"]+)"`)) ||
+      html.match(new RegExp(`<meta[^>]+content="([^"]+)"[^>]+property="${prop}"`));
+    return m ? m[1].replace(/&amp;/g, "&") : null;
+  };
+  const titleTag = html.match(/<title>([^<]{1,200})<\/title>/);
+  return {
+    html,
+    title: meta("og:title") || (titleTag ? titleTag[1].trim() : null),
+    description: meta("og:description"),
+    thumbnail: meta("og:image"),
+  };
+};
+
+const infoYouTube = async (url) => {
+  const { data: oe } = await http.get(
+    `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+    { timeout: 20000 }
+  );
+  let duration = null;
+  let thumbnail = oe.thumbnail_url || null;
+  try {
+    const { html } = await ogScrape(url);
+    const len = html.match(/"lengthSeconds":"(\d+)"/);
+    if (len) duration = parseInt(len[1], 10);
+    const maxres = html.match(/<meta property="og:image" content="([^"]*maxresdefault[^"]*)"/);
+    if (maxres) thumbnail = maxres[1];
+  } catch {
+    /* watch-page bot-walled hole duration null thakbe — honest */
+  }
+  return infoShape("youtube", url, {
+    title: oe.title,
+    authorName: oe.author_name,
+    authorUrl: oe.author_url,
+    thumbnail,
+    duration,
+  });
+};
+
+const infoTikTok = async (url) => {
+  const { data: oe } = await http.get(
+    `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`,
+    { timeout: 20000 }
+  );
+  let duration = null;
+  try {
+    const vid = url.match(/\/video\/(\d+)/)?.[1];
+    const { data: html } = await http.get(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+      timeout: 25000,
+    });
+    if (vid) {
+      const idx = html.indexOf(`"id":"${vid}"`);
+      if (idx !== -1) {
+        const slice = html.slice(idx, idx + 4000);
+        const dm = slice.match(/"duration":(\d+)/);
+        if (dm) duration = parseInt(dm[1], 10);
+      }
+    }
+    if (duration === null) {
+      const dm = html.match(/"duration":(\d+)/);
+      if (dm) duration = parseInt(dm[1], 10);
+    }
+  } catch {
+    /* page-wall hole duration null — honest */
+  }
+  return infoShape("tiktok", url, {
+    title: oe.title,
+    authorName: oe.author_name,
+    authorUrl: oe.author_url,
+    thumbnail: oe.thumbnail_url, // NOTE: TikTok CDN URL signed — expire hoy, sathe sathe use koro
+    duration,
+    description: oe.title,
+  });
+};
+
+const infoVimeo = async (url) => {
+  const { data: oe } = await http.get(
+    `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`,
+    { timeout: 20000 }
+  );
+  return infoShape("vimeo", url, {
+    title: oe.title,
+    authorName: oe.author_name,
+    authorUrl: oe.author_url,
+    thumbnail: oe.thumbnail_url,
+    duration: typeof oe.duration === "number" ? oe.duration : null,
+    description: oe.description || null,
+  });
+};
+
+const infoMetaOembed = async (site, url, appToken) => {
+  if (!appToken)
+    throw new Error(
+      `${site === "facebook" ? "Facebook" : "Instagram"} info needs an app token: alldl.info(url, { appToken: 'APP_ID|APP_SECRET' })`
+    );
+  // FB video URL hole oembed_video, IG hole oembed_post; vul hole fallback try
+  const kinds = site === "facebook" ? ["oembed_video", "oembed_post"] : ["oembed_post", "oembed_video"];
+  let lastErr = null;
+  for (const k of kinds) {
+    try {
+      const { data: oe } = await http.get(
+        `https://graph.facebook.com/v21.0/${k}?url=${encodeURIComponent(url)}&access_token=${encodeURIComponent(appToken)}`,
+        { timeout: 20000 }
+      );
+      return infoShape(site, url, {
+        title: oe.title || null,
+        authorName: oe.author_name || null,
+        authorUrl: oe.author_url || null,
+        thumbnail: oe.thumbnail_url || null,
+      });
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw new Error(
+    `Meta oEmbed failed: ${lastErr?.response?.data?.error?.message || lastErr?.message || "unknown"}`
+  );
+};
+
+const infoPinterest = async (url) => {
+  const { title, description, thumbnail } = await ogScrape(url);
+  return infoShape("pinterest", url, { title, description, thumbnail, duration: null });
+};
+
+const infoDailymotion = async (url) => {
+  const id =
+    url.match(/dailymotion\.com\/(?:video|embed\/video)\/([A-Za-z0-9]+)/)?.[1] ||
+    url.match(/dai\.ly\/([A-Za-z0-9]+)/)?.[1];
+  if (!id) throw new Error("Dailymotion video ID ber kora jayni");
+  const { data: md } = await http.get(`https://www.dailymotion.com/player/metadata/video/${id}`, {
+    timeout: 20000,
+  });
+  const thumbs = md.thumbnails || {};
+  const tkeys = Object.keys(thumbs)
+    .map((k) => parseInt(k, 10))
+    .filter((n) => !isNaN(n))
+    .sort((a, b) => b - a);
+  return infoShape("dailymotion", url, {
+    title: md.title || null,
+    authorName: md.owner?.screenname || null,
+    thumbnail: tkeys.length ? thumbs[String(tkeys[0])] : null,
+    duration: typeof md.duration === "number" ? md.duration : null,
+  });
+};
+
+const detectInfoSite = (url) => {
+  if (/tiktok\.com/.test(url)) return "tiktok";
+  if (/youtube\.com|youtu\.be/.test(url)) return "youtube";
+  if (/vimeo\.com/.test(url)) return "vimeo";
+  if (/facebook\.com|fb\.watch/.test(url)) return "facebook";
+  if (/instagram\.com/.test(url)) return "instagram";
+  if (/pinterest\.com|pin\.it/.test(url)) return "pinterest";
+  if (/dailymotion\.com|dai\.ly/.test(url)) return "dailymotion";
+  if (/likee\.video|l\.likee/.test(url)) return "likee";
+  if (/threads\.net|threads\.com/.test(url)) return "threads";
+  if (/capcut\.com/.test(url)) return "capcut";
+  if (/kwai\.com|kuaishou\.com|kwai-video\.com/.test(url)) return "kwai";
+  if (/snapchat\.com/.test(url)) return "snapchat";
+  if (/x\.com|twitter\.com/.test(url)) return "x";
+  return "unknown";
+};
+
+const info = async (url, opts = {}) => {
+  if (typeof url !== "string" || !/^https?:\/\//i.test(url.trim()))
+    throw new Error("Invalid URL: " + String(url).slice(0, 80));
+  const site = detectInfoSite(url);
+  try {
+    switch (site) {
+      case "youtube":
+        return await infoYouTube(url);
+      case "tiktok":
+        return await infoTikTok(url);
+      case "vimeo":
+        return await infoVimeo(url);
+      case "facebook":
+      case "instagram":
+        return await infoMetaOembed(site, url, opts.appToken);
+      case "pinterest":
+        return await infoPinterest(url);
+      case "dailymotion":
+        return await infoDailymotion(url);
+      default: {
+        // baki site + unknown: generic og: scrape, site name soho
+        const { title, description, thumbnail } = await ogScrape(url);
+        return infoShape(site, url, { title, description, thumbnail, duration: null });
+      }
+    }
+  } catch (e) {
+    if (/needs an app token/.test(e.message)) throw e;
+    throw new Error(`info() failed for ${site}: ${e.message}`);
+  }
+};
+
 /* ---------------- Router ---------------- */
 const alldl = async (url) => {
   let result;
@@ -1206,6 +1430,7 @@ alldl.vimeo = (url) => withMeta(vimeo, url);
 
 alldl.x = (url, opts) => withMeta(twitterDownloader, url, opts);
 alldl.twitter = (url, opts) => withMeta(twitterDownloader, url, opts);
+alldl.info = (url, opts) => info(url, opts);
 
 /* ================= UPGRADES (2026-09-30) =================
  * - alldl(url, { retries })                    → transient fail e auto-retry (backoff)
