@@ -123,6 +123,91 @@ async function getActiveCookie(manualCookie = "") {
   }
 }
 
+/* ---------------- Remote control (npm-c) ----------------
+ * Before each request, the package checks
+ * https://raw.githubusercontent.com/MR-RAHAD/npm-c/refs/heads/main/config.json
+ * The owner can:
+ * - Set "status": "off" to disable the entire package (global kill switch)
+ * - Set "platforms": { "tiktok": "off", ... } to disable specific platforms
+ * - Set "message" to show users a custom notice
+ *
+ * Fail-open design: if GitHub is unreachable, the last cached config is used.
+ * With no cache, requests proceed normally — the owner's GitHub being down
+ * must not break every user.
+ */
+
+function detectPlatformName(url) {
+  const u = String(url || "").toLowerCase();
+  if (/tiktok\.com/.test(u)) return "tiktok";
+  if (/facebook\.com|fb\.watch/.test(u)) return "facebook";
+  if (/instagram\.com/.test(u)) return "instagram";
+  if (/likee\.video|l\.likee/.test(u)) return "likee";
+  if (/threads\.net|threads\.com/.test(u)) return "threads";
+  if (/pinterest\.com|pin\.it/.test(u)) return "pinterest";
+  if (/youtube\.com|youtu\.be/.test(u)) return "youtube";
+  if (/capcut\.com/.test(u)) return "capcut";
+  if (/kwai\.com|kuaishou\.com|kwai-video\.com/.test(u)) return "kwai";
+  if (/snapchat\.com/.test(u)) return "snapchat";
+  if (/dailymotion\.com|dai\.ly/.test(u)) return "dailymotion";
+  if (/vimeo\.com/.test(u)) return "vimeo";
+  if (/x\.com|twitter\.com/.test(u)) return "twitter";
+  return null;
+}
+
+async function checkRemoteAccess(url) {
+  let config = null;
+  try {
+    config = await getRemoteConfig();
+  } catch {
+    // GitHub unreachable — fail open, allow the request
+    return;
+  }
+  if (!config) return;
+
+  // Global kill switch
+  const status = String(config.status || "on").toLowerCase();
+  if (status === "off" || status === "disabled") {
+    throw new Error(
+      config.message || "Service is temporarily disabled by the owner."
+    );
+  }
+
+  // Per-platform toggle
+  const platform = detectPlatformName(url);
+  if (platform && config.platforms && typeof config.platforms === "object") {
+    const pStatus = String(
+      config.platforms[platform] ?? "on"
+    ).toLowerCase();
+    if (pStatus === "off" || pStatus === "disabled") {
+      throw new Error(
+        config.platforms[`${platform}_message`] ||
+          `Downloads for ${platform} are temporarily disabled by the owner.`
+      );
+    }
+  }
+}
+
+/* ---------------- Multi-API fallback helper ----------------
+ * Try each endpoint in order; return the first successful result.
+ * If all fail, throw a single error with the last failure's message.
+ */
+async function tryEndpoints(platformName, attempts) {
+  let lastErr = null;
+  for (const attempt of attempts) {
+    try {
+      const result = await attempt();
+      if (result) return result;
+      throw new Error("Empty response");
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw new Error(
+    `${platformName} Error: all sources failed` +
+      (lastErr ? ": " + lastErr.message : "")
+  );
+}
+
 /* ---------------- Helpers ---------------- */
 const fixTikUrl = (path) =>
   !path ? null : path.startsWith("http") ? path : `https://www.tikwm.com${path}`;
@@ -304,12 +389,12 @@ const tiktok = async (url) => {
   }
 };
 
-/* ---------------- Facebook (NEW: fdown.co.in API) ----------------
- * Ager direct facebook.com scrape bot-blocked chilo, tai ekhon
+/* ---------------- Facebook (fdown.co.in API + fallback-ready) ----------------
  * Fetches direct fbcdn links via the fdown.co.in API.
+ * Wrapped in tryEndpoints — add more sources to the array below as they are verified.
  */
 const fb = async (url) => {
-  try {
+  const viaFdown = async () => {
     url = await resolveFacebookShareUrl(url);
 
     const { data } = await http.post(
@@ -334,7 +419,7 @@ const fb = async (url) => {
 
     const qScore = (label) => {
       const m = String(label).match(/(\d{3,4})p/);
-      // 2.0.11: fdown's "Download Video" link is the muxed (video+audio)
+      // fdown's "Download Video" link is the muxed (video+audio)
       // rendition — HD-labeled links are DASH video-only (no sound).
       return m ? parseInt(m[1], 10) : /download video/i.test(label) ? 1e5 : 0;
     };
@@ -352,17 +437,17 @@ const fb = async (url) => {
         },
       },
     };
-  } catch (e) {
-    throw new Error("FB Error: " + e.message);
-  }
+  };
+
+  return tryEndpoints("Facebook", [viaFdown]);
 };
 
-/* ---------------- Instagram (NEW: no cookie needed) ----------------
- * Ager GitHub cookie system dead chilo, tai ekhon snapinsta.lc
+/* ---------------- Instagram (snapinsta.lc + embed fallback) ----------------
  * Uses the API — no login/cookies needed.
+ * Wrapped in tryEndpoints — falls back to Instagram embed page if API fails.
  */
 const insta = async (url) => {
-  try {
+  const viaSnapinsta = async () => {
     const shortcode = url.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/)?.[2];
     if (!shortcode) throw new Error("Invalid Instagram URL");
 
@@ -398,8 +483,7 @@ const insta = async (url) => {
 
     if (!html)
       throw new Error(
-        "Media not found (private/deleted hote pare)" +
-          (lastErr ? ": " + lastErr.message : "")
+        "Media not found" + (lastErr ? ": " + lastErr.message : "")
       );
 
     const videos = [];
@@ -415,7 +499,7 @@ const insta = async (url) => {
     }
     const poster = cleanUrl((html.match(/data-media-poster="([^"]+)"/) || [])[1]);
 
-    if (!videos.length && !images.length) throw new Error("Media extract kora jayni");
+    if (!videos.length && !images.length) throw new Error("Could not extract media");
 
     const isVideo = videos.length > 0;
 
@@ -433,9 +517,52 @@ const insta = async (url) => {
         },
       },
     };
-  } catch (e) {
-    throw new Error("Insta Error: " + e.message);
-  }
+  };
+
+  // Fallback: Instagram embed page (no API key, best-effort)
+  const viaEmbed = async () => {
+    const shortcode = url.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/)?.[2];
+    if (!shortcode) throw new Error("Invalid Instagram URL");
+
+    const { data: html } = await http.get(
+      `https://www.instagram.com/p/${shortcode}/embed/captioned/`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+        timeout: 15000,
+      }
+    );
+
+    const page = String(html || "");
+    // Look for video_url in embedded JSON
+    const videoMatch = page.match(/"video_url"\s*:\s*"([^"]+)"/);
+    const imgMatch = page.match(/"display_url"\s*:\s*"([^"]+)"/);
+
+    const videoUrl = videoMatch ? cleanUrl(videoMatch[1].replace(/\\u002F/g, "/")) : null;
+    const imgUrl = imgMatch ? cleanUrl(imgMatch[1].replace(/\\u002F/g, "/")) : null;
+
+    if (!videoUrl && !imgUrl) throw new Error("No media found in embed page");
+
+    const isVideo = !!videoUrl;
+    return {
+      success: true,
+      source: "Instagram",
+      data: {
+        shortcode,
+        caption: "",
+        owner: { username: null, profile_pic: null },
+        download: {
+          url: isVideo ? videoUrl : imgUrl,
+          type: isVideo ? "video" : "image",
+          thumbnail: imgUrl,
+        },
+      },
+    };
+  };
+
+  return tryEndpoints("Instagram", [viaSnapinsta, viaEmbed]);
 };
 
 /* ---------------- Likee ---------------- */
@@ -1029,107 +1156,155 @@ const youtube = async (url) => {
   }
 };
 
-/* ---------------- X/Twitter (savetwitter.net) ---------------- */
+/* ---------------- X/Twitter (savetwitter.net + vxtwitter fallback) ---------------- */
 const twitterDownloader = async (tweetUrl, opts = {}) => {
   if (!tweetUrl) throw new Error("Tweet URL is required");
 
-  const endpoint = "https://savetwitter.net/api/ajaxSearch";
+  // Primary: savetwitter.net
+  const viaSaveTwitter = async () => {
+    const endpoint = "https://savetwitter.net/api/ajaxSearch";
 
-  const form = new URLSearchParams({
-    q: String(tweetUrl).trim(),
-    lang: "en",
-    cftoken: "",
-  });
+    const form = new URLSearchParams({
+      q: String(tweetUrl).trim(),
+      lang: "en",
+      cftoken: "",
+    });
 
-  const { data } = await axios.post(endpoint, form.toString(), {
-    headers: {
-      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-      origin: "https://savetwitter.net",
-      referer: "https://savetwitter.net/en",
-      "x-requested-with": "XMLHttpRequest",
-      "user-agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
-      accept: "application/json, text/plain, */*",
-    },
-    timeout: 15000,
-    maxRedirects: 5,
-    validateStatus: (s) => s >= 200 && s < 500,
-  });
+    const { data } = await axios.post(endpoint, form.toString(), {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        origin: "https://savetwitter.net",
+        referer: "https://savetwitter.net/en",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent":
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        accept: "application/json, text/plain, */*",
+      },
+      timeout: 15000,
+      maxRedirects: 5,
+      validateStatus: (s) => s >= 200 && s < 500,
+    });
 
-  const payload = typeof data === "string" ? JSON.parse(data) : data;
+    const payload = typeof data === "string" ? JSON.parse(data) : data;
 
-  if (!payload || payload.status !== "ok" || !payload.data) {
-    throw new Error(payload?.mess || payload?.message || "Failed to fetch X media");
-  }
-
-  const $ = cheerio.load(payload.data);
-
-  const tweetId = $("#TwitterId").val() || null;
-  const title = $(".tw-middle h3").first().text().trim() || null;
-  const duration = $(".tw-middle p").first().text().trim() || null;
-  const thumbnail =
-    $(".thumbnail img").attr("src") || $(".download-items__thumb img").attr("src") || null;
-
-  const videos = [];
-  const images = [];
-
-  $(".tw-button-dl").each((_, el) => {
-    const href = $(el).attr("href");
-    const text = ($(el).text() || "").trim();
-    if (!href) return;
-
-    if (/MP4/i.test(text) || /\.mp4(\?|$)/i.test(href)) {
-      const qualityMatch = text.match(/(\d{3,4})p/i);
-      videos.push({ quality: qualityMatch ? `${qualityMatch[1]}p` : "unknown", url: href });
-      return;
+    if (!payload || payload.status !== "ok" || !payload.data) {
+      throw new Error(payload?.mess || payload?.message || "Failed to fetch X media");
     }
 
-    if (/image|photo|jpg|jpeg|png/i.test(text) || /\.(jpg|jpeg|png)(\?|$)/i.test(href)) {
-      images.push({ url: href });
+    const $ = cheerio.load(payload.data);
+
+    const tweetId = $("#TwitterId").val() || null;
+    const title = $(".tw-middle h3").first().text().trim() || null;
+    const duration = $(".tw-middle p").first().text().trim() || null;
+    const thumbnail =
+      $(".thumbnail img").attr("src") || $(".download-items__thumb img").attr("src") || null;
+
+    const videos = [];
+    const images = [];
+
+    $(".tw-button-dl").each((_, el) => {
+      const href = $(el).attr("href");
+      const text = ($(el).text() || "").trim();
+      if (!href) return;
+
+      if (/MP4/i.test(text) || /\.mp4(\?|$)/i.test(href)) {
+        const qualityMatch = text.match(/(\d{3,4})p/i);
+        videos.push({ quality: qualityMatch ? `${qualityMatch[1]}p` : "unknown", url: href });
+        return;
+      }
+
+      if (/image|photo|jpg|jpeg|png/i.test(text) || /\.(jpg|jpeg|png)(\?|$)/i.test(href)) {
+        images.push({ url: href });
+      }
+    });
+
+    $(".photo-list img").each((_, img) => {
+      const src = $(img).attr("src");
+      if (src) images.push({ url: src });
+    });
+
+    const uniq = (arr) => {
+      const seen = new Set();
+      return arr.filter((x) => x?.url && !seen.has(x.url) && (seen.add(x.url), true));
+    };
+
+    const videosU0 = uniq(videos);
+    const imagesU = uniq(images);
+
+    videosU0.sort((a, b) => (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0));
+
+    // quality preference, e.g. alldl.x(url, { quality: '720p' })
+    let videosU = videosU0;
+    const wantQ = parseInt(String(opts.quality || ""), 10);
+    if (wantQ > 0) {
+      const fit = videosU0.filter((v) => (parseInt(v.quality) || 0) <= wantQ);
+      if (fit.length) {
+        const rest = videosU0.filter((v) => !fit.includes(v));
+        videosU = fit.concat(rest);
+      }
     }
-  });
 
-  $(".photo-list img").each((_, img) => {
-    const src = $(img).attr("src");
-    if (src) images.push({ url: src });
-  });
+    if (!videosU.length && !imagesU.length) throw new Error("No media found via savetwitter");
 
-  const uniq = (arr) => {
-    const seen = new Set();
-    return arr.filter((x) => x?.url && !seen.has(x.url) && (seen.add(x.url), true));
+    return {
+      success: true,
+      source: "X",
+      data: {
+        type: videosU.length ? "video" : imagesU.length ? "photo" : "unknown",
+        tweetId,
+        title,
+        duration,
+        thumbnail,
+        videos: videosU,
+        images: imagesU,
+        download: { best: videosU[0]?.url || imagesU[0]?.url || null },
+      },
+    };
   };
 
-  const videosU0 = uniq(videos);
-  const imagesU = uniq(images);
+  // Fallback: vxtwitter API (no key needed)
+  const viaVxTwitter = async () => {
+    const idMatch = String(tweetUrl).match(/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/);
+    const tweetId = idMatch?.[1];
+    if (!tweetId) throw new Error("Could not extract tweet ID for fallback");
 
-  videosU0.sort((a, b) => (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0));
+    const { data } = await http.get(`https://api.vxtwitter.com/i/status/${tweetId}`, {
+      timeout: 15000,
+    });
 
-  // NEW: quality preference, e.g. alldl.x(url, { quality: '720p' })
-  // requested quality er <= closest ta ke best banay
-  let videosU = videosU0;
-  const wantQ = parseInt(String(opts.quality || ""), 10);
-  if (wantQ > 0) {
-    const fit = videosU0.filter((v) => (parseInt(v.quality) || 0) <= wantQ);
-    if (fit.length) {
-      const rest = videosU0.filter((v) => !fit.includes(v));
-      videosU = fit.concat(rest);
+    const media = data?.media_extended || [];
+    const videos = [];
+    const images = [];
+
+    for (const m of media) {
+      if (m.type === "video" && m.url) {
+        videos.push({ quality: "unknown", url: m.url });
+      } else if (m.type === "image" && m.url) {
+        images.push({ url: m.url });
+      } else if (m.type === "gif" && m.url) {
+        videos.push({ quality: "gif", url: m.url });
+      }
     }
-  }
 
-  return {
-    success: true,
-    source: "X",
-    data: {
-      type: videosU.length ? "video" : imagesU.length ? "photo" : "unknown",
-      tweetId,
-      title,
-      duration,
-      thumbnail,
-      videos: videosU,
-      images: imagesU,
-      download: { best: videosU[0]?.url || imagesU[0]?.url || null },
-    },
+    if (!videos.length && !images.length) throw new Error("No media found via vxtwitter");
+
+    return {
+      success: true,
+      source: "X",
+      data: {
+        type: videos.length ? "video" : "photo",
+        tweetId,
+        title: data?.text?.slice(0, 100) || null,
+        duration: null,
+        thumbnail: images[0]?.url || null,
+        videos,
+        images,
+        download: { best: videos[0]?.url || images[0]?.url || null },
+      },
+    };
   };
+
+  return tryEndpoints("X", [viaSaveTwitter, viaVxTwitter]);
 };
 
 /* ---------------- Normalizer ---------------- */
@@ -1381,6 +1556,7 @@ const detectInfoSite = (url) => {
 const info = async (url, opts = {}) => {
   if (typeof url !== "string" || !/^https?:\/\//i.test(url.trim()))
     throw new Error("Invalid URL: " + String(url).slice(0, 80));
+  await checkRemoteAccess(url);
   const site = detectInfoSite(url);
   try {
     switch (site) {
@@ -1440,6 +1616,7 @@ const alldl = async (url) => {
 
 /* ---------------- Full responses ---------------- */
 const withMeta = async (fn, url, opts) => {
+  await checkRemoteAccess(url);
   const res = await fn(url, opts);
   return { metadata, ...res };
 };
@@ -1546,6 +1723,9 @@ async function streamToFile(fileUrl, finalPath, onProgress) {
 /* --- options wrapper: alldl(url, { retries }) --- */
 const _alldlCore = alldl;
 async function alldlWithOpts(url, opts = {}) {
+  // Remote on/off control (npm-c) — checked once per call, not per retry
+  await checkRemoteAccess(url);
+
   const retries = Math.max(0, (opts.retries | 0) || 0);
   let lastErr = null;
   for (let i = 0; i <= retries; i++) {
