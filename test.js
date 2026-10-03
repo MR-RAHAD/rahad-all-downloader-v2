@@ -181,13 +181,16 @@ const fail = (name, err) => {
     else fail("Pinterest info", e.message);
   }
 
-  console.log("\n[14] info() Facebook without appToken (honest error)");
+  console.log("\n[14] info() Facebook tokenless oEmbed (no appToken needed now)");
   try {
-    await alldl.info("https://www.facebook.com/watch/?v=123456");
-    fail("FB no-token", "error throw koreni");
+    const r = await alldl.info("https://www.facebook.com/reel/2049670975667529");
+    if (r.site === "facebook" && r.embedHtml) {
+      ok("FB token charai info dey (embedHtml, title null — honest)");
+    } else {
+      fail("FB tokenless", "unexpected shape: " + JSON.stringify(r).slice(0, 120));
+    }
   } catch (e) {
-    if (/appToken/.test(e.message)) ok("FB token chara honest error dey");
-    else fail("FB no-token", e.message);
+    fail("FB tokenless", e.message);
   }
 
   console.log("\n[15] info() garbage URL (honest error)");
