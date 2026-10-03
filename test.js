@@ -26,11 +26,13 @@ const fail = (name, err) => {
     "kwai",
     "x",
     "twitter",
+    "dailymotion",
+    "vimeo",
   ];
   const missing = fns.filter((k) => typeof alldl[k] !== "function");
   if (typeof alldl !== "function") fail("alldl router", "not a function");
   else if (missing.length) fail("platform functions", "missing: " + missing.join(", "));
-  else ok("alldl + 11 ta platform function export ache");
+  else ok("alldl + 13 ta platform function export ache");
 
   console.log("\n[2] TikTok normalized (live)");
   try {
@@ -72,7 +74,47 @@ const fail = (name, err) => {
     fail("Kwai normalized", e.message);
   }
 
-  console.log("\n[5] Unsupported platform");
+  console.log("\n[5] Pinterest (live, rewritten 2.1.0)");
+  try {
+    const r = await alldl.pinterest(
+      "https://in.pinterest.com/pin/tom-and-jerry-clip-video--386113368074226930/"
+    );
+    if (r.success && r.source === "Pinterest" && r.data.download.video?.startsWith("http")) {
+      ok(`Pinterest → ${r.data.download.type} — ${String(r.data.download.video).slice(0, 60)}…`);
+    } else {
+      fail("Pinterest", "video link paini");
+    }
+  } catch (e) {
+    fail("Pinterest", e.message);
+  }
+
+  console.log("\n[6] Dailymotion (live, new 2.1.0)");
+  try {
+    const r = await alldl.dailymotion("https://www.dailymotion.com/video/x7tgad0");
+    if (r.success && r.source === "Dailymotion" && r.data.download.video?.startsWith("http")) {
+      ok(`Dailymotion → ${r.data.download.type} — ${String(r.data.title).slice(0, 30)}…`);
+    } else {
+      fail("Dailymotion", "stream link paini");
+    }
+  } catch (e) {
+    fail("Dailymotion", e.message);
+  }
+
+  console.log("\n[7] Vimeo (live, new 2.1.0)");
+  try {
+    const r = await alldl.vimeo("https://vimeo.com/1084537");
+    if (r.success && r.source === "Vimeo" && r.data.download.video?.startsWith("http")) {
+      ok(`Vimeo → ${r.data.download.quality} mp4 — ${String(r.data.title).slice(0, 30)}…`);
+    } else {
+      fail("Vimeo", "video link paini");
+    }
+  } catch (e) {
+    if (/Cloudflare/.test(e.message)) {
+      console.log("  ⚠️ Vimeo — skip (datacenter IP te Cloudflare 401; method curl diye verified, residential IP te kaj kore)");
+    } else fail("Vimeo", e.message);
+  }
+
+  console.log("\n[8] Unsupported platform");
   try {
     await alldl("https://example.com/video/123");
     fail("unsupported URL", "error throw koreni");
