@@ -2,6 +2,17 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.1.0] - 2026-10-03
+
+### Added
+- **Dailymotion** downloader (`alldl.dailymotion`) — player metadata API theke HLS master stream; Dailymotion progressive MP4 dey na, tai HLS URL return kore (ffmpeg diye mp4 convert kora jay)
+- **Vimeo** downloader (`alldl.vimeo`) — playerConfig theke direct progressive MP4 (720p/360p); signed URL, sathe sathe download korte hobe. Note: Vimeo er player page Cloudflare-protected — kichu datacenter IP theke 401 aste pare (method verified, residential IP te kaj kore)
+- Router + TypeScript definitions update — ekhon **14 ta platform**
+
+### Changed
+- **Pinterest rewritten** — `videoUrls` array parse kore H.264 MP4 (`/720p/` / expMp4) prefer kore; HEVC/h265 ar HLS ekhon fallback
+- **Facebook audio fix forward-ported** (2.0.11): fdown er muxed "Download Video" link prefer kore — ekhon FB download e sound thakbe
+
 ## [2.0.11] - 2026-10-02
 
 ### Fixed
