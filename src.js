@@ -1171,6 +1171,7 @@ const infoShape = (site, url, f = {}) => ({
   thumbnail: f.thumbnail ?? null,
   duration: f.duration ?? null,
   description: f.description ?? null,
+  ...(f.embedHtml ? { embedHtml: f.embedHtml } : {}),
 });
 
 const ogScrape = async (url) => {
@@ -1278,28 +1279,56 @@ const infoVimeo = async (url) => {
 };
 
 const infoMetaOembed = async (site, url, appToken) => {
-  if (!appToken)
-    throw new Error(
-      `${site === "facebook" ? "Facebook" : "Instagram"} info needs an app token: alldl.info(url, { appToken: 'APP_ID|APP_SECRET' })`
-    );
-  // FB video URL hole oembed_video, IG hole oembed_post; vul hole fallback try
+  // Meta oEmbed ekhon token CHARAO kaj kore (verified 2026-10-03) — kintu shudhu
+  // embed HTML + validation dey, title/author/thumbnail dey na.
+  // appToken thakle (oEmbed Read approved app) richer data er try kora hoy.
   const kinds = site === "facebook" ? ["oembed_video", "oembed_post"] : ["oembed_post", "oembed_video"];
+  const get = async (k, token) => {
+    const u =
+      `https://graph.facebook.com/v21.0/${k}?url=${encodeURIComponent(url)}` +
+      (token ? `&access_token=${encodeURIComponent(token)}` : "");
+    const { data: oe } = await http.get(u, { timeout: 20000 });
+    if (!oe || oe.error) throw new Error(oe?.error?.message || "oEmbed error");
+    return oe;
+  };
+  let tokenless = null;
   let lastErr = null;
   for (const k of kinds) {
     try {
-      const { data: oe } = await http.get(
-        `https://graph.facebook.com/v21.0/${k}?url=${encodeURIComponent(url)}&access_token=${encodeURIComponent(appToken)}`,
-        { timeout: 20000 }
-      );
-      return infoShape(site, url, {
-        title: oe.title || null,
-        authorName: oe.author_name || null,
-        authorUrl: oe.author_url || null,
-        thumbnail: oe.thumbnail_url || null,
-      });
+      tokenless = await get(k);
+      break;
     } catch (e) {
       lastErr = e;
     }
+  }
+  if (appToken) {
+    for (const k of kinds) {
+      try {
+        const oe = await get(k, appToken);
+        if (oe.title || oe.author_name || oe.thumbnail_url) {
+          return infoShape(site, url, {
+            title: oe.title || null,
+            authorName: oe.author_name || null,
+            authorUrl: oe.author_url || null,
+            thumbnail: oe.thumbnail_url || null,
+            embedHtml: oe.html || null,
+          });
+        }
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+  }
+  if (tokenless) {
+    return infoShape(site, url, {
+      title: null,
+      authorName: null,
+      authorUrl: null,
+      thumbnail: null,
+      embedHtml: tokenless.html || null,
+      description:
+        "Tokenless oEmbed: URL valid, kintu Meta title/thumbnail dey na (oEmbed Read approval lage)",
+    });
   }
   throw new Error(
     `Meta oEmbed failed: ${lastErr?.response?.data?.error?.message || lastErr?.message || "unknown"}`
