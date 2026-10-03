@@ -85,8 +85,8 @@ const fail = (name, err) => {
       fail("Pinterest", "video link paini");
     }
   } catch (e) {
-    if (/no video data/.test(e.message)) {
-      console.log("  ⚠️ Pinterest — skip (Pinterest khali/blocked page dise; residential IP te kaj kore)");
+    if (/kono video URL pelam na/.test(e.message)) {
+      console.log("  ⚠️ Pinterest — skip (page te video URL nai; residential IP te kaj kore)");
     } else {
       fail("Pinterest", e.message);
     }
