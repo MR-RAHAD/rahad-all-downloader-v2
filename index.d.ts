@@ -78,6 +78,29 @@ export interface XOptions {
   quality?: string;
 }
 
+/** Metadata-only result — via `alldl.info(url)` (no download) */
+export interface InfoAuthor {
+  name: string | null;
+  url: string | null;
+}
+
+export interface InfoResult {
+  /** Detected site: 'tiktok' | 'youtube' | 'vimeo' | 'facebook' | 'instagram' | 'pinterest' | 'dailymotion' | ... | 'unknown' */
+  site: string;
+  url: string;
+  title: string | null;
+  author: InfoAuthor;
+  /** Seconds, or null when not available. TikTok thumbnails are signed CDN URLs — expire hoy */
+  thumbnail: string | null;
+  duration: number | null;
+  description: string | null;
+}
+
+export interface InfoOptions {
+  /** Facebook/Instagram oEmbed er jonno: 'APP_ID|APP_SECRET' (user-supplied, kokhono hardcode koro na) */
+  appToken?: string;
+}
+
 export interface AllDL {
   /** Auto-detect platform from URL → normalized `{ title, videoUrl, source }` */
   (url: string, opts?: AllDLOptions): Promise<NormalizedResult>;
@@ -119,6 +142,13 @@ export interface AllDL {
   twitter(url: string, opts?: XOptions): Promise<PlatformResult>;
   /** Snapchat — spotlight/stories video & photo */
   snapchat(url: string): Promise<PlatformResult>;
+  /**
+   * Metadata only — kono download na. Returns
+   * `{ site, url, title, author:{name,url}, thumbnail, duration, description }`.
+   * Field na pele `null` ashe, kokhono banano data na.
+   * Facebook/Instagram er jonno `{ appToken: 'APP_ID|APP_SECRET' }` dite hobe.
+   */
+  info(url: string, opts?: InfoOptions): Promise<InfoResult>;
 }
 
 export declare const alldl: AllDL;
