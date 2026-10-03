@@ -135,6 +135,46 @@ const { alldl } = require('rahad-all-downloader-v2');
 
 ---
 
+## ℹ️ Video Info (no download)
+
+Download na kore shudhu metadata lagle — title, author, thumbnail, duration:
+
+```js
+const { alldl } = require('rahad-all-downloader-v2');
+
+const meta = await alldl.info('https://www.tiktok.com/@khaby.lame/video/7081291571970329861');
+console.log(meta);
+// {
+//   site: 'tiktok',
+//   url: 'https://www.tiktok.com/@khaby.lame/video/7081291571970329861',
+//   title: 'He doesn’t want to be my friend 😢🥺 ...',
+//   author: { name: 'Khabane lame', url: 'https://www.tiktok.com/@khaby.lame' },
+//   thumbnail: 'https://p16-common-sign.tiktokcdn-us.com/...',  // ⚠️ signed URL — expire hoy!
+//   duration: 34,       // seconds, na pele null
+//   description: '...'
+// }
+
+// Facebook / Instagram er jonno app token lage (tomar nijer, kokhono hardcode koro na):
+const fbMeta = await alldl.info('https://www.facebook.com/watch/?v=123', { appToken: 'APP_ID|APP_SECRET' });
+```
+
+**Field availability per site** (✅ = available, ➖ = null):
+
+| Site | title | author | thumbnail | duration | description |
+|---|---|---|---|---|---|
+| YouTube | ✅ | ✅ | ✅ (maxres) | ✅ | ➖ |
+| TikTok | ✅ | ✅ | ✅ (⚠️ expires) | ✅ | ✅ (= title) |
+| Vimeo | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Facebook* | ✅ | ✅ | ✅ | ➖ | ➖ |
+| Instagram* | ✅ | ✅ | ✅ | ➖ | ➖ |
+| Pinterest | ✅ | ➖ | ✅ | ➖ | ✅ |
+| Dailymotion | ✅ | ✅ | ✅ | ✅ | ➖ |
+| Others / unknown | ✅ (og:) | ➖ | ✅ (og:) | ➖ | ✅ (og:) |
+
+\* `appToken` required — na dile honest error ashe.
+
+---
+
 ## ⬇️ Download to Disk
 
 Shudhu URL na — chaile direct file hishebe save korte paro, progress callback soho:
