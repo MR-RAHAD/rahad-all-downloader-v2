@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.2.1] - 2026-10-03
+
+### Changed
+- **Facebook/Instagram `info()` no longer requires appToken.** Meta's oEmbed works tokenless again — `alldl.info(fbUrl)` now returns `{ site, url, embedHtml }` with honest `null`s for title/thumbnail (Meta doesn't provide them without oEmbed Read approval). `appToken` still accepted for richer data when the app is approved.
+
 ## [2.2.0] - 2026-10-03
 
 ### Added
