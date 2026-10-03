@@ -306,7 +306,7 @@ const tiktok = async (url) => {
 
 /* ---------------- Facebook (NEW: fdown.co.in API) ----------------
  * Ager direct facebook.com scrape bot-blocked chilo, tai ekhon
- * fdown.co.in API diye direct fbcdn link ana hoy.
+ * Fetches direct fbcdn links via the fdown.co.in API.
  */
 const fb = async (url) => {
   try {
@@ -359,14 +359,14 @@ const fb = async (url) => {
 
 /* ---------------- Instagram (NEW: no cookie needed) ----------------
  * Ager GitHub cookie system dead chilo, tai ekhon snapinsta.lc
- * API use kore — kono login/cookie lage na.
+ * Uses the API — no login/cookies needed.
  */
 const insta = async (url) => {
   try {
     const shortcode = url.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/)?.[2];
     if (!shortcode) throw new Error("Invalid Instagram URL");
 
-    // snapinsta majhe majhe transient fail kore, tai 2 bar retry
+    // snapinsta sometimes fails transiently, so retry twice
     let html = null;
     let lastErr = null;
     for (let attempt = 0; attempt < 2 && !html; attempt++) {
@@ -664,13 +664,13 @@ const pinterest = async (url) => {
 
     // Broad: v1.pinimg.com/videos URLs in ANY markup shape.
     // Pinterest er SSR markup region/IP onujayi bodlay — specific JSON key te
-    // nirbhor na kore sob video URL tule ana hoy, tarpor best ta bacha hoy.
+    // collect all video URLs without relying on one source, then pick the best.
     const raw = html.match(/https:\/\/v1\.pinimg\.com\/videos\/[^"\\\s]+/g) || [];
     const urls = [...new Set(raw.map((u) => u.replace(/\\\//g, "/")))];
 
     if (!urls.length)
       throw new Error(
-        "Pinterest Error: page te kono video URL pelam na (image/private/deleted pin hote pare, or Pinterest khali page dise — residential IP te try koro)"
+        "Pinterest Error: no video URL found on page (may be image/private/deleted pin, or Pinterest served an empty page — try a residential IP)"
       );
 
     const mp4h264 =
@@ -697,10 +697,10 @@ const pinterest = async (url) => {
 };
 
 /* ---------------- Dailymotion (2.1.0) ----------------
- * Player metadata endpoint theke HLS master URL ana hoy.
- * Dailymotion progressive MP4 dey na — tai HLS URL return kore
- * (ffmpeg diye mp4 te convert kora jay). Signed ?sec= per-request,
- * tai link sathe sathe use korte hobe, cache kora jabe na.
+ * Fetches the HLS master URL from the player metadata endpoint.
+ * Dailymotion does not provide progressive MP4 — returns the HLS URL instead
+ * (can be converted to mp4 with ffmpeg). Signed ?sec= per-request,
+ * so use the link immediately; it cannot be cached.
  */
 const dailymotion = async (url) => {
   try {
@@ -738,7 +738,7 @@ const dailymotion = async (url) => {
         download: {
           video: cleanUrl(hlsUrl),
           type: "hls",
-          note: "Dailymotion sudhu HLS stream dey — mp4 chaile ffmpeg diye convert koro; link signed, sathe sathe download koro",
+          note: "Dailymotion only provides HLS streams — convert to mp4 with ffmpeg if needed; link is signed, download immediately",
         },
       },
     };
@@ -749,8 +749,8 @@ const dailymotion = async (url) => {
 
 /* ---------------- Vimeo (2.1.0) ----------------
  * Page HTML -> twitter:player meta -> player page -> window.playerConfig
- * -> request.files.progressive[] theke direct MP4.
- * URL gulo signed (exp+hmac) — sathe sathe download korte hobe.
+ * -> direct MP4 from request.files.progressive[].
+ * URLs are signed (exp+hmac) — download immediately.
  */
 const vimeo = async (url) => {
   try {
@@ -825,13 +825,13 @@ const vimeo = async (url) => {
           video: cleanUrl(best.url),
           type: "mp4",
           quality: best.quality || `${best.width}p`,
-          note: "Signed URL — sathe sathe download koro, kichukhon por expire hoye jabe",
+          note: "Signed URL — download immediately, it expires soon",
         },
       },
     };
   } catch (e) {
     const msg = /401/.test(e.message)
-      ? "Vimeo blocked this request (Cloudflare bot check) — residential IP theke try koro"
+      ? "Vimeo blocked this request (Cloudflare bot check) — try from a residential IP"
       : e.message;
     throw new Error("Vimeo Error: " + msg);
   }
@@ -935,7 +935,7 @@ const snapchat = async (url) => {
 
 /* ---------------- YouTube (NEW: Invidious API + instance fallback) ----------------
  * ytdl-core YouTube change holei venge jeto, tai ekhon Invidious
- * public API use kore — kono npm dependency lage na.
+ * Uses the public API — no npm dependencies needed.
  */
 const youtube = async (url) => {
   try {
@@ -961,7 +961,7 @@ const youtube = async (url) => {
         .slice(0, 3);
       bases.push(...healthy);
     } catch {
-      /* discovery fail hole primary diyei try hobe */
+      /* if discovery fails, falls back to primary */
     }
 
     let info = null;
@@ -1212,7 +1212,7 @@ const infoYouTube = async (url) => {
     const maxres = html.match(/<meta property="og:image" content="([^"]*maxresdefault[^"]*)"/);
     if (maxres) thumbnail = maxres[1];
   } catch {
-    /* watch-page bot-walled hole duration null thakbe — honest */
+    /* duration stays null if the watch page is bot-walled — honest */
   }
   return infoShape("youtube", url, {
     title: oe.title,
@@ -1251,13 +1251,13 @@ const infoTikTok = async (url) => {
       if (dm) duration = parseInt(dm[1], 10);
     }
   } catch {
-    /* page-wall hole duration null — honest */
+    /* duration null if page-walled — honest */
   }
   return infoShape("tiktok", url, {
     title: oe.title,
     authorName: oe.author_name,
     authorUrl: oe.author_url,
-    thumbnail: oe.thumbnail_url, // NOTE: TikTok CDN URL signed — expire hoy, sathe sathe use koro
+    thumbnail: oe.thumbnail_url, // NOTE: TikTok CDN URLs are signed — they expire, use immediately
     duration,
     description: oe.title,
   });
@@ -1279,9 +1279,9 @@ const infoVimeo = async (url) => {
 };
 
 const infoMetaOembed = async (site, url, appToken) => {
-  // Meta oEmbed ekhon token CHARAO kaj kore (verified 2026-10-03) — kintu shudhu
-  // embed HTML + validation dey, title/author/thumbnail dey na.
-  // appToken thakle (oEmbed Read approved app) richer data er try kora hoy.
+  // Meta oEmbed now works WITHOUT a token (verified 2026-10-03) — but only
+  // returns embed HTML + validation, no title/author/thumbnail.
+  // When appToken is provided (oEmbed Read approved app), richer data is attempted.
   const kinds = site === "facebook" ? ["oembed_video", "oembed_post"] : ["oembed_post", "oembed_video"];
   const get = async (k, token) => {
     const u =
@@ -1463,8 +1463,8 @@ alldl.info = (url, opts) => info(url, opts);
 
 /* ================= UPGRADES (2026-09-30) =================
  * - alldl(url, { retries })                    → transient fail e auto-retry (backoff)
- * - alldl.download(url, dest, { onProgress })  → file hishebe save kore disk e
- * - alldl.batch(urls, { concurrency, onItem })  → ekbare onek URL, per-item result
+ * - alldl.download(url, dest, { onProgress })  → saves to disk as a file
+ * - alldl.batch(urls, { concurrency, onItem })  → many URLs at once, per-item results
  * - alldl.x(url, { quality: '720p' })          → quality preference (opore)
  */
 const fs = require("fs");
@@ -1578,7 +1578,7 @@ alldlWithOpts.download = async (url, dest, opts = {}) => {
       });
       ext = extFromType(head.headers["content-type"]);
     } catch {
-      /* HEAD support na korle URL ext / default use hobe */
+      /* falls back to URL extension / default if HEAD is unsupported */
     }
   }
   ext = ext || ".mp4";
@@ -1598,7 +1598,7 @@ alldlWithOpts.download = async (url, dest, opts = {}) => {
     finalPath = path.join(dest, base + ext);
   }
 
-  // overwrite na kore (1), (2)... add kore
+  // append (1), (2)... instead of overwriting
   let p = finalPath;
   let n = 1;
   while (fs.existsSync(p)) {
