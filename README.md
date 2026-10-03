@@ -68,7 +68,7 @@ npm install rahad-all-downloader-v2
 | 🎭 **Likee** | ✅ | ✅ | – | Direct MP4 extraction |
 | ✂️ **CapCut** | ✅ | ✅ | – | Direct MP4 extraction |
 | 🔥 **Kwai** | ✅ | ✅ | – | Direct video extraction |
-| 🎞️ **Dailymotion** | ✅ | ✅ | – | HLS stream (ffmpeg diye MP4) |
+| 🎞️ **Dailymotion** | ✅ | ✅ | – | HLS stream (MP4 via ffmpeg) |
 | 🎥 **Vimeo** | ✅ | ✅ | – | Direct progressive MP4 |
 
 ---
@@ -137,7 +137,7 @@ const { alldl } = require('rahad-all-downloader-v2');
 
 ## ℹ️ Video Info (no download)
 
-Download na kore shudhu metadata lagle — title, author, thumbnail, duration:
+Get only metadata without downloading — title, author, thumbnail, duration:
 
 ```js
 const { alldl } = require('rahad-all-downloader-v2');
@@ -149,12 +149,12 @@ console.log(meta);
 //   url: 'https://www.tiktok.com/@khaby.lame/video/7081291571970329861',
 //   title: 'He doesn’t want to be my friend 😢🥺 ...',
 //   author: { name: 'Khabane lame', url: 'https://www.tiktok.com/@khaby.lame' },
-//   thumbnail: 'https://p16-common-sign.tiktokcdn-us.com/...',  // ⚠️ signed URL — expire hoy!
-//   duration: 34,       // seconds, na pele null
+//   thumbnail: 'https://p16-common-sign.tiktokcdn-us.com/...',  // ⚠️ signed URL — expires!
+//   duration: 34,       // seconds, null if unavailable
 //   description: '...'
 // }
 
-// Facebook / Instagram er jonno app token lage (tomar nijer, kokhono hardcode koro na):
+// For Facebook / Instagram, an app token is required (your own — never hardcode):
 const fbMeta = await alldl.info('https://www.facebook.com/watch/?v=123', { appToken: 'APP_ID|APP_SECRET' });
 ```
 
@@ -171,20 +171,20 @@ const fbMeta = await alldl.info('https://www.facebook.com/watch/?v=123', { appTo
 | Dailymotion | ✅ | ✅ | ✅ | ✅ | ➖ |
 | Others / unknown | ✅ (og:) | ➖ | ✅ (og:) | ➖ | ✅ (og:) |
 
-\* `appToken` required — na dile honest error ashe.
+\* `appToken` required — returns an honest error without it.
 
 ---
 
 ## ⬇️ Download to Disk
 
-Shudhu URL na — chaile direct file hishebe save korte paro, progress callback soho:
+Save directly to disk as a file, with progress callback:
 
 ```js
 const { alldl } = require('rahad-all-downloader-v2');
 
 const file = await alldl.download(
   'https://www.tiktok.com/@user/video/1234567890',
-  './videos/', // folder dile filename auto (title theke), file path dile oitai
+  './videos/', // folder → auto filename from title; file path → used as-is
   {
     onProgress: ({ percent, done, total }) =>
       console.log(`Downloading... ${percent ?? '?'}%`),
@@ -203,20 +203,20 @@ Ekbate onek URL — ekta fail korleo baki gula thambe na:
 const results = await alldl.batch(
   ['TIKTOK_URL', 'IG_URL', 'YT_URL'],
   {
-    concurrency: 3, // ekshathe koyta cholbe
+    concurrency: 3, // max concurrent requests
     onItem: (item, i) => console.log(i, item.success ? 'done' : item.error),
   }
 );
-// results[i] = { success: true, url, metadata, data } ba { success: false, url, error }
+// results[i] = { success: true, url, metadata, data } or { success: false, url, error }
 ```
 
 ## 🔁 Auto-Retry & Quality Preference
 
 ```js
-// Transient fail hole 2 bar abar try korbe (backoff soho)
+// Retries transient failures twice (with backoff)
 const r = await alldl('TIKTOK_URL', { retries: 2 });
 
-// X/Twitter: 720p chaile er <= closest quality select hobe
+// X/Twitter: for 720p, selects the closest quality at or below it
 const x = await alldl.x('X_URL', { quality: '720p' });
 ```
 
