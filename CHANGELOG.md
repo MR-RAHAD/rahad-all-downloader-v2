@@ -2,6 +2,11 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.2.2] - 2026-10-03
+
+### Changed
+- **All documentation and comments are now in English.** Converted all Romanized Bangla JSDoc comments, inline comments, error messages, and README text to clean English across `index.d.ts`, `src.js`, `README.md`, and `test.js`. No functional changes.
+
 ## [2.2.1] - 2026-10-03
 
 ### Changed
