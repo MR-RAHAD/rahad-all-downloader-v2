@@ -85,7 +85,11 @@ const fail = (name, err) => {
       fail("Pinterest", "video link paini");
     }
   } catch (e) {
-    fail("Pinterest", e.message);
+    if (/no video data/.test(e.message)) {
+      console.log("  ⚠️ Pinterest — skip (Pinterest khali/blocked page dise; residential IP te kaj kore)");
+    } else {
+      fail("Pinterest", e.message);
+    }
   }
 
   console.log("\n[6] Dailymotion (live, new 2.1.0)");
