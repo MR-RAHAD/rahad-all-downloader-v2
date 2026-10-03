@@ -28,11 +28,12 @@ const fail = (name, err) => {
     "twitter",
     "dailymotion",
     "vimeo",
+    "info",
   ];
   const missing = fns.filter((k) => typeof alldl[k] !== "function");
   if (typeof alldl !== "function") fail("alldl router", "not a function");
   else if (missing.length) fail("platform functions", "missing: " + missing.join(", "));
-  else ok("alldl + 13 ta platform function export ache");
+  else ok("alldl + 14 ta function export ache (13 platform + info)");
 
   console.log("\n[2] TikTok normalized (live)");
   try {
@@ -125,6 +126,77 @@ const fail = (name, err) => {
   } catch (e) {
     if (/not supported/i.test(e.message)) ok("unsupported URL thikmoto reject kore");
     else fail("unsupported URL", e.message);
+  }
+
+  console.log("\n[9] info() YouTube (live)");
+  try {
+    const m = await alldl.info("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    if (m.site === "youtube" && m.title && m.author.name && m.thumbnail) {
+      ok(`YouTube info → "${m.title.slice(0, 30)}…" | dur: ${m.duration} | author: ${m.author.name}`);
+    } else fail("YouTube info", "field missing: " + JSON.stringify(m).slice(0, 100));
+  } catch (e) {
+    fail("YouTube info", e.message);
+  }
+
+  console.log("\n[10] info() TikTok (live)");
+  try {
+    const m = await alldl.info("https://www.tiktok.com/@khaby.lame/video/7081291571970329861");
+    if (m.site === "tiktok" && m.title && m.author.name && m.thumbnail) {
+      ok(`TikTok info → dur: ${m.duration} | author: ${m.author.name}`);
+    } else fail("TikTok info", "field missing");
+  } catch (e) {
+    if (/403/.test(e.message)) console.log("  ⚠️ TikTok info — skip (datacenter IP 403)");
+    else fail("TikTok info", e.message);
+  }
+
+  console.log("\n[11] info() Vimeo (live)");
+  try {
+    const m = await alldl.info("https://vimeo.com/1084537");
+    if (m.site === "vimeo" && m.title === "Big Buck Bunny" && m.duration === 597) {
+      ok(`Vimeo info → "${m.title}" | dur: ${m.duration} | author: ${m.author.name}`);
+    } else fail("Vimeo info", "field mismatch: " + JSON.stringify(m).slice(0, 100));
+  } catch (e) {
+    fail("Vimeo info", e.message);
+  }
+
+  console.log("\n[12] info() Dailymotion (live)");
+  try {
+    const m = await alldl.info("https://www.dailymotion.com/video/x7tgad0");
+    if (m.site === "dailymotion" && m.title && typeof m.duration === "number") {
+      ok(`Dailymotion info → "${m.title}" | dur: ${m.duration}`);
+    } else fail("Dailymotion info", "field missing");
+  } catch (e) {
+    fail("Dailymotion info", e.message);
+  }
+
+  console.log("\n[13] info() Pinterest (live)");
+  try {
+    const m = await alldl.info("https://in.pinterest.com/pin/tom-and-jerry-clip-video--386113368074226930/");
+    if (m.site === "pinterest" && m.title && m.thumbnail && m.duration === null) {
+      ok(`Pinterest info → "${m.title.slice(0, 30)}…" | duration null (honest)`);
+    } else fail("Pinterest info", "field mismatch");
+  } catch (e) {
+    if (/kono video URL pelam na/.test(e.message))
+      console.log("  ⚠️ Pinterest info — skip (page te video URL nai; residential IP te kaj kore)");
+    else fail("Pinterest info", e.message);
+  }
+
+  console.log("\n[14] info() Facebook without appToken (honest error)");
+  try {
+    await alldl.info("https://www.facebook.com/watch/?v=123456");
+    fail("FB no-token", "error throw koreni");
+  } catch (e) {
+    if (/appToken/.test(e.message)) ok("FB token chara honest error dey");
+    else fail("FB no-token", e.message);
+  }
+
+  console.log("\n[15] info() garbage URL (honest error)");
+  try {
+    await alldl.info("not a url");
+    fail("garbage URL", "error throw koreni");
+  } catch (e) {
+    if (/Invalid URL/.test(e.message)) ok("garbage URL thikmoto reject kore");
+    else fail("garbage URL", e.message);
   }
 
   console.log(`\n———— Result: ${passed} passed, ${failed} failed ————\n`);
