@@ -36,10 +36,32 @@
 </tr>
 <tr>
 <td align="center">🌐<br><b>13 Platforms</b><br><sub>TikTok, FB, IG, YT, X & more in one call</sub></td>
-<td align="center">📦<br><b>Zero Bloat</b><br><sub>Lightweight with minimal dependencies</sub></td>
+<td align="center">🔄<br><b>Auto Fallback</b><br><sub>Multiple sources per platform — if one API is down, the next takes over silently</sub></td>
 <td align="center">📘<br><b>TypeScript Ready</b><br><sub>Full type definitions + native ESM support</sub></td>
 </tr>
 </table>
+
+---
+
+## 🎛️ Remote Control (Owner)
+
+The package checks a remote config before each request. As the owner, you can turn the service on/off from your GitHub repo (`MR-RAHAD/npm-c` → `config.json`):
+
+```json
+{
+  "status": "on",
+  "message": "Service is currently active",
+  "platforms": {
+    "tiktok": "on",
+    "facebook": "off"
+  }
+}
+```
+
+- `"status": "off"` — disables the entire package (users see your `message`)
+- `"platforms": { "<name>": "off" }` — disables a single platform
+- Changes take effect within ~10 minutes (config is cached)
+- If GitHub is unreachable, the package keeps working (fail-open)
 
 ---
 
