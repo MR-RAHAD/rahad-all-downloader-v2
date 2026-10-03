@@ -87,7 +87,7 @@ const fail = (name, err) => {
     }
   } catch (e) {
     if (/kono video URL pelam na/.test(e.message)) {
-      console.log("  ⚠️ Pinterest — skip (page te video URL nai; residential IP te kaj kore)");
+      console.log("  ⚠️ Pinterest — skip (no video URL on page; works on residential IP)");
     } else {
       fail("Pinterest", e.message);
     }
@@ -115,7 +115,7 @@ const fail = (name, err) => {
     }
   } catch (e) {
     if (/Cloudflare/.test(e.message)) {
-      console.log("  ⚠️ Vimeo — skip (datacenter IP te Cloudflare 401; method curl diye verified, residential IP te kaj kore)");
+      console.log("  ⚠️ Vimeo — skip (Cloudflare 401 on datacenter IP; method verified via curl, works on residential IP)");
     } else fail("Vimeo", e.message);
   }
 
@@ -124,7 +124,7 @@ const fail = (name, err) => {
     await alldl("https://example.com/video/123");
     fail("unsupported URL", "error throw koreni");
   } catch (e) {
-    if (/not supported/i.test(e.message)) ok("unsupported URL thikmoto reject kore");
+    if (/not supported/i.test(e.message)) ok("unsupported URL correctly rejected");
     else fail("unsupported URL", e.message);
   }
 
@@ -177,7 +177,7 @@ const fail = (name, err) => {
     } else fail("Pinterest info", "field mismatch");
   } catch (e) {
     if (/kono video URL pelam na/.test(e.message))
-      console.log("  ⚠️ Pinterest info — skip (page te video URL nai; residential IP te kaj kore)");
+      console.log("  ⚠️ Pinterest info — skip (no video URL on page; works on residential IP)");
     else fail("Pinterest info", e.message);
   }
 
@@ -185,7 +185,7 @@ const fail = (name, err) => {
   try {
     const r = await alldl.info("https://www.facebook.com/reel/2049670975667529");
     if (r.site === "facebook" && r.embedHtml) {
-      ok("FB token charai info dey (embedHtml, title null — honest)");
+      ok("FB info without token (embedHtml, title null — honest)");
     } else {
       fail("FB tokenless", "unexpected shape: " + JSON.stringify(r).slice(0, 120));
     }
@@ -198,7 +198,7 @@ const fail = (name, err) => {
     await alldl.info("not a url");
     fail("garbage URL", "error throw koreni");
   } catch (e) {
-    if (/Invalid URL/.test(e.message)) ok("garbage URL thikmoto reject kore");
+    if (/Invalid URL/.test(e.message)) ok("garbage URL correctly rejected");
     else fail("garbage URL", e.message);
   }
 
