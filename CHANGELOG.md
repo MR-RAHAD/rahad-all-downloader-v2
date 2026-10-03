@@ -2,6 +2,18 @@
 
 All notable changes to `rahad-all-downloader-v2` will be documented here.
 
+## [2.3.0] - 2026-10-03
+
+### Added
+- **Remote on/off control via GitHub.** The package checks `MR-RAHAD/npm-c` `config.json` before each request. Set `"status": "off"` to disable the entire package, or `"platforms": { "<name>": "off" }` to disable specific platforms. Changes take effect within 10 minutes. Fail-open: if GitHub is unreachable, requests proceed normally.
+- **Multi-source fallback per platform.** Each platform now tries multiple sources in order — if one API is down, the next is tried automatically:
+  - **TikTok**: tikwm.com → www.tikwm.com
+  - **YouTube**: Invidious instances → ytdl-core
+  - **X/Twitter**: savetwitter.net → vxtwitter API
+  - **Instagram**: snapinsta.lc → Instagram embed page
+  - **CapCut**: 3bic → capdownloader.com
+  - **Facebook**: fdown.co.in (fallback-ready framework)
+
 ## [2.2.2] - 2026-10-03
 
 ### Changed
