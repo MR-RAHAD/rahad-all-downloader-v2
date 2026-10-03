@@ -21,13 +21,13 @@ function verify(outFile) {
   const fns = [
     "tiktok", "fb", "insta", "likee", "threads",
     "pinterest", "youtube", "capcut", "kwai", "x", "twitter",
-    "snapchat", "dailymotion", "vimeo",
+    "snapchat", "dailymotion", "vimeo", "info",
   ];
   const missing = fns.filter((k) => typeof alldl[k] !== "function");
   if (typeof alldl !== "function" || missing.length) {
     throw new Error("verify failed, missing: " + missing.join(", "));
   }
-  console.log("verify: alldl + 14 platform functions OK");
+  console.log("verify: alldl + 15 functions OK (14 platform + info)");
 }
 
 (async () => {
