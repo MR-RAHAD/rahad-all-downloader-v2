@@ -676,8 +676,15 @@ const pinterest = async (url) => {
       if (legacy) urls = [legacy[1]];
     }
 
-    if (!urls.length)
+    if (!urls.length) {
+      // Pinterest majhe majhe datacenter IP te khali/blocked page dey (video data chara).
+      // "videos" block e nai mane page e video data ashe nai — extractor bug na, environment issue.
+      if (!html.includes('"videos":'))
+        throw new Error(
+          "Pinterest Error: page contained no video data (empty/blocked response — datacenter IP? residential IP te try koro)"
+        );
       throw new Error("Pinterest video not found (image pin / private / deleted hote pare)");
+    }
 
     const mp4h264 =
       urls.find((u) => /\.mp4($|\?)/.test(u) && /\/720p\/|expMp4/i.test(u)) ||
